@@ -453,20 +453,22 @@ components.html(f"""
   }}
   drawStatic();
 
-  // Web Audio API for boosted static volume
-  var audioCtx   = new (window.AudioContext || window.webkitAudioContext)();
-  var gainNode   = audioCtx.createGain();
-  gainNode.gain.value = 2.0;
-  gainNode.connect(audioCtx.destination);
-
   var staticEl = new Audio("data:audio/mp3;base64,{audio_static}");
-  staticEl.loop = true;
-  var staticSrc = audioCtx.createMediaElementSource(staticEl);
-  staticSrc.connect(gainNode);
+  staticEl.loop   = true;
+  staticEl.volume = 1.0;
 
   var musicSnd = new Audio("data:audio/mp3;base64,{audio_music}");
   musicSnd.loop   = false;
   musicSnd.volume = 0.36;
+
+  // Page Visibility API — pause music when tab is hidden, resume when back
+  doc.addEventListener('visibilitychange', function() {{
+    if (doc.hidden) {{
+      if (!musicSnd.paused) musicSnd.pause();
+    }} else {{
+      if (musicSnd.paused && musicSnd.currentTime > 0) musicSnd.play().catch(function(){{}});
+    }}
+  }});
 
   // Knob twist on click
   var knobAngles = {{'knob-big': 0, 'knob-small': 0}};
@@ -488,9 +490,7 @@ components.html(f"""
   // Single click — play static, show loading, start 7s timer
   if (playBtn) {{
     playBtn.onclick = function() {{
-      audioCtx.resume().then(function() {{
-        staticEl.play().catch(function() {{}});
-      }});
+      staticEl.play().catch(function() {{}});
       playBtn.style.transition = 'opacity 0.5s ease';
       playBtn.style.opacity = '0';
       setTimeout(function() {{
