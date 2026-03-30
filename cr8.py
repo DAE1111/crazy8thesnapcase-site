@@ -646,7 +646,7 @@ components.html(f"""
     els.forEach(function(el) {{
       if (!el.dataset.cr8click) {{
         el.dataset.cr8click = '1';
-        el.addEventListener('mouseenter', function() {{
+        el.addEventListener('click', function() {{
           playClick();
           triggerGlitch();
         }});
