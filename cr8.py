@@ -500,9 +500,16 @@ components.html(f"""
   }}
   drawStatic();
 
+  // Web Audio API to boost static volume beyond 1.0
+  var staticAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  var staticGain     = staticAudioCtx.createGain();
+  staticGain.gain.value = 3.0;
+  staticGain.connect(staticAudioCtx.destination);
+
   var staticEl = new Audio("data:audio/mp3;base64,{audio_static}");
-  staticEl.loop   = true;
-  staticEl.volume = 1.0;
+  staticEl.loop = true;
+  var staticSrc = staticAudioCtx.createMediaElementSource(staticEl);
+  staticSrc.connect(staticGain);
 
   var musicSnd = new Audio("data:audio/mp3;base64,{audio_music}");
   musicSnd.loop   = false;
@@ -537,8 +544,10 @@ components.html(f"""
   // Single click — play static, show loading, start 7s timer
   if (playBtn) {{
     playBtn.onclick = function() {{
-      staticEl.currentTime = 0;
-      staticEl.play().catch(function(e) {{ console.log('static play failed:', e); }});
+      staticAudioCtx.resume().then(function() {{
+        staticEl.currentTime = 0;
+        staticEl.play().catch(function(e) {{ console.log('static play failed:', e); }});
+      }});
       playBtn.style.transition = 'opacity 0.5s ease';
       playBtn.style.opacity = '0';
       setTimeout(function() {{
@@ -673,27 +682,8 @@ components.html(f"""
     s.play().catch(function(){{}});
   }}
 
-  // Static click sound only on links and nav buttons
   var staticClick = new Audio("data:audio/mp3;base64,{audio_static1}");
   staticClick.volume = 0.6;
-  function playStaticClick(e) {{
-    var t = e.target;
-    // Only fire on actual interactive elements
-    var isLink = t.tagName === 'A' || t.closest('a');
-    var isBtn  = t.tagName === 'BUTTON' || t.closest('button');
-    var isNav  = t.closest('[role="radio"]') || t.closest('label') || t.closest('[role="button"]');
-    if (isLink || isBtn || isNav) {{
-      var s = staticClick.cloneNode();
-      s.volume = 0.6;
-      s.play().catch(function(){{}});
-    }}
-  }}
-  doc.addEventListener('mousedown', function(e) {{
-    if (e.button === 0) playStaticClick(e);
-  }});
-  doc.addEventListener('touchstart', function(e) {{
-    playStaticClick(e);
-  }}, {{passive: true}});
 
   function attachSounds() {{
     var els = doc.querySelectorAll('a, button, [role="radio"], label, [role="button"]');
@@ -703,6 +693,9 @@ components.html(f"""
         el.addEventListener('click', function() {{
           playClick();
           triggerGlitch();
+          var s = staticClick.cloneNode();
+          s.volume = 0.6;
+          s.play().catch(function(){{}});
         }});
       }}
     }});
