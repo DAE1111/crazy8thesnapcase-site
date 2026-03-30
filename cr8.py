@@ -500,16 +500,13 @@ components.html(f"""
   }}
   drawStatic();
 
-  // Web Audio API to boost static volume beyond 1.0
-  var staticAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  var staticGain     = staticAudioCtx.createGain();
-  staticGain.gain.value = 3.0;
-  staticGain.connect(staticAudioCtx.destination);
-
-  var staticEl = new Audio("data:audio/mp3;base64,{audio_static}");
-  staticEl.loop = true;
-  var staticSrc = staticAudioCtx.createMediaElementSource(staticEl);
-  staticSrc.connect(staticGain);
+  // Layer 3 copies of the static sound to simulate 300% volume
+  var staticEl  = new Audio("data:audio/mp3;base64,{audio_static}");
+  var staticEl2 = new Audio("data:audio/mp3;base64,{audio_static}");
+  var staticEl3 = new Audio("data:audio/mp3;base64,{audio_static}");
+  staticEl.loop  = true; staticEl.volume  = 1.0;
+  staticEl2.loop = true; staticEl2.volume = 1.0;
+  staticEl3.loop = true; staticEl3.volume = 1.0;
 
   var musicSnd = new Audio("data:audio/mp3;base64,{audio_music}");
   musicSnd.loop   = false;
@@ -544,9 +541,9 @@ components.html(f"""
   // Single click — play static, show loading, start 7s timer
   if (playBtn) {{
     playBtn.onclick = function() {{
-      staticAudioCtx.resume().then(function() {{
-        staticEl.currentTime = 0;
-        staticEl.play().catch(function(e) {{ console.log('static play failed:', e); }});
+      [staticEl, staticEl2, staticEl3].forEach(function(s) {{
+        s.currentTime = 0;
+        s.play().catch(function(){{}});
       }});
       playBtn.style.transition = 'opacity 0.5s ease';
       playBtn.style.opacity = '0';
@@ -561,7 +558,7 @@ components.html(f"""
           btn.style.display = 'block';
           btn.style.animation = 'cr8pulse 1.8s ease-in-out infinite';
           btn.onclick = function() {{
-            staticEl.pause(); staticEl.currentTime = 0;
+            [staticEl, staticEl2, staticEl3].forEach(function(s) {{ s.pause(); s.currentTime = 0; }});
             musicSnd.play().catch(function() {{}});
             var wrap = doc.getElementById('cr8-wrap');
             if (wrap) {{
