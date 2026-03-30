@@ -500,13 +500,13 @@ components.html(f"""
   }}
   drawStatic();
 
-  // Layer 3 copies of the static sound to simulate 300% volume
+  // Layer 5 copies of the static sound
   var staticEl  = new Audio("data:audio/mp3;base64,{audio_static}");
   var staticEl2 = new Audio("data:audio/mp3;base64,{audio_static}");
   var staticEl3 = new Audio("data:audio/mp3;base64,{audio_static}");
-  staticEl.loop  = true; staticEl.volume  = 1.0;
-  staticEl2.loop = true; staticEl2.volume = 1.0;
-  staticEl3.loop = true; staticEl3.volume = 1.0;
+  var staticEl4 = new Audio("data:audio/mp3;base64,{audio_static}");
+  var staticEl5 = new Audio("data:audio/mp3;base64,{audio_static}");
+  [staticEl,staticEl2,staticEl3,staticEl4,staticEl5].forEach(function(s) {{ s.loop = true; s.volume = 1.0; }});
 
   var musicSnd = new Audio("data:audio/mp3;base64,{audio_music}");
   musicSnd.loop   = false;
@@ -541,7 +541,7 @@ components.html(f"""
   // Single click — play static, show loading, start 7s timer
   if (playBtn) {{
     playBtn.onclick = function() {{
-      [staticEl, staticEl2, staticEl3].forEach(function(s) {{
+      [staticEl, staticEl2, staticEl3, staticEl4, staticEl5].forEach(function(s) {{
         s.currentTime = 0;
         s.play().catch(function(){{}});
       }});
@@ -558,7 +558,7 @@ components.html(f"""
           btn.style.display = 'block';
           btn.style.animation = 'cr8pulse 1.8s ease-in-out infinite';
           btn.onclick = function() {{
-            [staticEl, staticEl2, staticEl3].forEach(function(s) {{ s.pause(); s.currentTime = 0; }});
+            [staticEl, staticEl2, staticEl3, staticEl4, staticEl5].forEach(function(s) {{ s.pause(); s.currentTime = 0; }});
             musicSnd.play().catch(function() {{}});
             var wrap = doc.getElementById('cr8-wrap');
             if (wrap) {{
