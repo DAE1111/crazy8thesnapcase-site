@@ -355,6 +355,12 @@ st.markdown(f"""
   font-size:0.65vw; color:#444;
   letter-spacing:1px; text-transform:uppercase;
 }}
+.txt-mobile {{ display:none; }}
+.txt-desktop {{ display:inline; }}
+@media (max-width:768px) {{
+  .txt-mobile {{ display:inline; }}
+  .txt-desktop {{ display:none; }}
+}}
 #cr8-play-btn {{
   position:absolute; top:50%; left:50%;
   transform:translate(-50%,-50%); z-index:6;
@@ -414,7 +420,7 @@ st.markdown(f"""
       <div id="cr8-scanlines"></div>
       <div id="cr8-glare"></div>
       <button id="cr8-play-btn">&#9654; CLICK TO PLAY</button>
-      <div id="cr8-txt" style="display:none;">&#9646;&#9646; LOADING &#9646;&#9646;</div>
+      <div id="cr8-txt" style="display:none;"><span class="txt-desktop">&#9646;&#9646; LOADING &#9646;&#9646;</span><span class="txt-mobile">LOADING</span></div>
       <button id="cr8-btn">&#9654; ENTER SITE</button>
     </div>
     <div id="side-panel">
@@ -531,7 +537,8 @@ components.html(f"""
   // Single click — play static, show loading, start 7s timer
   if (playBtn) {{
     playBtn.onclick = function() {{
-      staticEl.play().catch(function() {{}});
+      staticEl.currentTime = 0;
+      staticEl.play().catch(function(e) {{ console.log('static play failed:', e); }});
       playBtn.style.transition = 'opacity 0.5s ease';
       playBtn.style.opacity = '0';
       setTimeout(function() {{
@@ -666,20 +673,26 @@ components.html(f"""
     s.play().catch(function(){{}});
   }}
 
-  // Static click sound on every left click / tap
+  // Static click sound only on links and nav buttons
   var staticClick = new Audio("data:audio/mp3;base64,{audio_static1}");
   staticClick.volume = 0.6;
-  doc.addEventListener('mousedown', function(e) {{
-    if (e.button === 0) {{
+  function playStaticClick(e) {{
+    var t = e.target;
+    // Only fire on actual interactive elements
+    var isLink = t.tagName === 'A' || t.closest('a');
+    var isBtn  = t.tagName === 'BUTTON' || t.closest('button');
+    var isNav  = t.closest('[role="radio"]') || t.closest('label') || t.closest('[role="button"]');
+    if (isLink || isBtn || isNav) {{
       var s = staticClick.cloneNode();
       s.volume = 0.6;
       s.play().catch(function(){{}});
     }}
+  }}
+  doc.addEventListener('mousedown', function(e) {{
+    if (e.button === 0) playStaticClick(e);
   }});
-  doc.addEventListener('touchstart', function() {{
-    var s = staticClick.cloneNode();
-    s.volume = 0.6;
-    s.play().catch(function(){{}});
+  doc.addEventListener('touchstart', function(e) {{
+    playStaticClick(e);
   }}, {{passive: true}});
 
   function attachSounds() {{
