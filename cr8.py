@@ -309,6 +309,47 @@ st.markdown(f"""
   box-shadow:0 0 6px #13D842,0 0 12px #13D842;
   margin-top:1vh;
 }}
+
+/* Mobile — lock TV to 4:3 aspect ratio, center it, black bars fill rest */
+@media (max-width:768px) {{
+  #cr8-wrap {{
+    background:#000 !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }}
+  #tv-body {{
+    width:100vw !important;
+    height:auto !important;
+    aspect-ratio:4/3 !important;
+    max-height:75vh !important;
+    padding:3vh 3vw !important;
+    border-radius:8px !important;
+  }}
+  #side-panel {{
+    display:none !important;
+  }}
+  #tv-body::before {{
+    height:5% !important;
+  }}
+  #tv-body::after {{
+    height:5% !important;
+  }}
+  #tv-screen-bezel {{
+    border-radius:6px !important;
+  }}
+  #cr8-play-btn {{
+    font-size:7vw !important;
+    padding:2vh 6vw !important;
+    letter-spacing:4px !important;
+  }}
+  #cr8-txt {{
+    font-size:7vw !important;
+  }}
+  #cr8-btn {{
+    font-size:5.5vw !important;
+    padding:1.5vh 6vw !important;
+  }}
+}}
 .knob-label {{
   font-family:'Times New Roman',serif;
   font-size:0.65vw; color:#444;
