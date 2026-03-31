@@ -239,7 +239,7 @@ components.html("""
       #egg-wrap {
         position:fixed;
         top:56px;
-        right:32px;
+        right:40px;
         z-index:2147483646;
         display:flex;
         flex-direction:column;
@@ -252,49 +252,61 @@ components.html("""
         50%      { transform:rotate(5deg);  transform-origin:top center; }
       }
       #egg-thread {
-        width:1px;
-        height:52px;
-        background:linear-gradient(to bottom, rgba(150,130,110,0.8), rgba(150,130,110,0.3));
+        width:2px;
+        height:55px;
+        background:linear-gradient(to bottom, rgba(220,200,170,1.0) 0%, rgba(180,155,120,0.6) 60%, rgba(150,125,95,0.2) 100%);
+        box-shadow: 1px 0 3px rgba(0,0,0,0.4);
+        border-radius:0 0 1px 1px;
       }
       #egg-sac {
-        width:62px;
-        height:74px;
-        border-radius:48% 48% 55% 55%;
-        background:radial-gradient(ellipse at 38% 32%, #f0e8d8 0%, #d4c4a8 30%, #b09878 70%, #8a7055 100%);
-        border:1px solid rgba(100,80,55,0.5);
+        width:100px;
+        height:120px;
+        border-radius:45% 45% 52% 52%;
+        background:
+          radial-gradient(ellipse at 35% 28%, rgba(255,248,230,0.9) 0%, rgba(220,195,155,0.7) 20%, transparent 50%),
+          radial-gradient(ellipse at 65% 65%, rgba(100,75,45,0.6) 0%, transparent 50%),
+          radial-gradient(ellipse at 50% 50%, #d4b896 0%, #b8956a 40%, #8a6840 70%, #6a4e2a 100%);
+        border:2px solid rgba(80,55,30,0.7);
         cursor:pointer;
         pointer-events:all;
         position:relative;
         box-shadow:
-          inset -6px -8px 14px rgba(0,0,0,0.35),
-          inset 3px 3px 8px rgba(255,255,240,0.2),
-          2px 4px 10px rgba(0,0,0,0.5);
+          inset -10px -14px 24px rgba(0,0,0,0.45),
+          inset 5px 5px 14px rgba(255,245,220,0.25),
+          inset -3px 3px 8px rgba(0,0,0,0.2),
+          3px 6px 18px rgba(0,0,0,0.6),
+          0 0 30px rgba(0,0,0,0.3);
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
       }
       #egg-sac::before {
         content:'';
         position:absolute;
-        top:10px; left:12px;
-        width:16px; height:9px;
-        background:rgba(255,255,255,0.25);
+        top:14px; left:16px;
+        width:26px; height:14px;
+        background:rgba(255,255,255,0.3);
         border-radius:50%;
-        transform:rotate(-35deg);
+        transform:rotate(-40deg);
+        filter:blur(3px);
       }
       #egg-sac::after {
         content:'';
         position:absolute;
-        top:18px; left:18px;
-        width:8px; height:5px;
-        background:rgba(255,255,255,0.12);
+        top:28px; left:26px;
+        width:12px; height:7px;
+        background:rgba(255,255,255,0.15);
         border-radius:50%;
-        transform:rotate(-20deg);
+        transform:rotate(-25deg);
+        filter:blur(2px);
       }
-      #egg-silk-1 { position:absolute; top:0; left:50%; width:1px; height:100%; background:rgba(220,200,170,0.15); transform:rotate(12deg); transform-origin:top center; }
-      #egg-silk-2 { position:absolute; top:0; left:50%; width:1px; height:100%; background:rgba(220,200,170,0.12); transform:rotate(-18deg); transform-origin:top center; }
-      #egg-silk-3 { position:absolute; top:30%; left:0; width:100%; height:1px; background:rgba(220,200,170,0.1); transform:rotate(5deg); }
+      #egg-silk-1 { position:absolute; top:0; left:48%; width:1px; height:105%; background:rgba(200,175,140,0.2); transform:rotate(14deg); transform-origin:top center; }
+      #egg-silk-2 { position:absolute; top:0; left:52%; width:1px; height:105%; background:rgba(200,175,140,0.18); transform:rotate(-20deg); transform-origin:top center; }
+      #egg-silk-3 { position:absolute; top:25%; left:-5%; width:110%; height:1px; background:rgba(200,175,140,0.15); transform:rotate(4deg); }
+      #egg-silk-4 { position:absolute; top:55%; left:-5%; width:110%; height:1px; background:rgba(200,175,140,0.12); transform:rotate(-3deg); }
+      #egg-silk-5 { position:absolute; top:0; left:30%; width:1px; height:100%; background:rgba(200,175,140,0.1); transform:rotate(25deg); transform-origin:top center; }
       #egg-arrow {
         position:fixed;
-        top:118px;
-        right:108px;
+        top:215px;
+        right:155px;
         color:#13D842;
         font-family:'Times New Roman',serif;
         font-weight:bold;
@@ -322,7 +334,9 @@ components.html("""
     var s1 = doc.createElement('div'); s1.id = 'egg-silk-1';
     var s2 = doc.createElement('div'); s2.id = 'egg-silk-2';
     var s3 = doc.createElement('div'); s3.id = 'egg-silk-3';
-    sac.appendChild(s1); sac.appendChild(s2); sac.appendChild(s3);
+    var s4 = doc.createElement('div'); s4.id = 'egg-silk-4';
+    var s5 = doc.createElement('div'); s5.id = 'egg-silk-5';
+    sac.appendChild(s1); sac.appendChild(s2); sac.appendChild(s3); sac.appendChild(s4); sac.appendChild(s5);
     wrap.appendChild(thread);
     wrap.appendChild(sac);
     doc.body.appendChild(wrap);
