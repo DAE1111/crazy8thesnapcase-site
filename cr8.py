@@ -145,13 +145,22 @@ st.markdown(f"""
         color: {TEXT_COLOR} !important;
         font-family: 'Times New Roman', Times, serif;
         font-weight: bold;
+        font-size: 28px !important;
+        text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
     }}
     h1,h2,h3,h4,h5,h6 {{
         font-family: 'Warsuck', serif !important;
-        font-size: clamp(1rem, 2vw, 1.6rem) !important;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        font-size: 48px !important;
+        letter-spacing: 4px;
+        text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 10px {TEXT_COLOR};
+    }}
+    [data-testid="stMain"] p,
+    [data-testid="stMain"] li,
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] li,
+    [data-testid="stSidebar"] label {{
+        font-size: 28px !important;
+        text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
     }}
     hr {{ border-color: {TEXT_COLOR}; }}
     img {{ display: block; margin: auto; }}
@@ -734,7 +743,8 @@ def skull_divider():
 def skull_header(text):
     st.markdown(
         f'<div style="text-align:center;margin-bottom:0.25rem;">'
-        f'<h2 style="font-family:Warsuck,serif;color:{TEXT_COLOR};margin:0;line-height:1;">{text}</h2>'
+        f'<h2 style="font-family:Warsuck,serif;color:{TEXT_COLOR};margin:0;line-height:1;'
+        f'text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff,0 0 10px {TEXT_COLOR};">{text}</h2>'
         f'</div>',
         unsafe_allow_html=True
     )
@@ -743,7 +753,8 @@ def skull_header(text):
 def skull_subheader(text):
     st.markdown(
         f'<div style="text-align:center;margin-bottom:0.25rem;">'
-        f'<h3 style="font-family:Warsuck,serif;color:{TEXT_COLOR};margin:0;line-height:1;">{text}</h3>'
+        f'<h3 style="font-family:Warsuck,serif;color:{TEXT_COLOR};margin:0;line-height:1;'
+        f'text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff,0 0 10px {TEXT_COLOR};">{text}</h3>'
         f'</div>',
         unsafe_allow_html=True
     )
@@ -753,7 +764,21 @@ def skull_subheader(text):
 
 if menu == NAV_HOME:
     skull_header("WHO IS CRAZY8 THE SNAP CASE")
-    st.markdown(BIO)
+    st.markdown(
+        f'''<div style="
+            text-align:center;
+            font-family:'Times New Roman',Times,serif;
+            font-weight:700;
+            font-size:28px;
+            color:{TEXT_COLOR};
+            text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff;
+            line-height:1.6;
+            max-width:860px;
+            margin:0 auto;
+            padding:0 20px;
+        ">{BIO}</div>''',
+        unsafe_allow_html=True
+    )
     if cr8_bio_img:
         st.markdown(
             f'<div style="text-align:center;margin-top:1rem;">'
