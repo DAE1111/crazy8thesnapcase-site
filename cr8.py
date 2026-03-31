@@ -230,62 +230,103 @@ components.html("""
   var doc = window.parent.document;
   var burst = false;
   var spiders = [];
+  var animFrames = [];
 
-  // Inject styles into parent
   if (!doc.getElementById('spider-style')) {
     var st = doc.createElement('style');
     st.id = 'spider-style';
     st.textContent = `
       #egg-wrap {
-        position:fixed; top:0; right:24px;
+        position:fixed;
+        top:56px;
+        right:32px;
         z-index:2147483646;
-        display:flex; flex-direction:column; align-items:center;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
         pointer-events:none;
+        animation:eggsway 2.5s ease-in-out infinite;
+      }
+      @keyframes eggsway {
+        0%,100% { transform:rotate(-5deg); transform-origin:top center; }
+        50%      { transform:rotate(5deg);  transform-origin:top center; }
       }
       #egg-thread {
-        width:2px; height:40px;
-        background:rgba(180,180,180,0.5);
+        width:1px;
+        height:52px;
+        background:linear-gradient(to bottom, rgba(150,130,110,0.8), rgba(150,130,110,0.3));
       }
       #egg-sac {
-        width:38px; height:44px;
-        background:#c8b89a;
-        border-radius:50% 50% 55% 55%;
-        border:2px solid #8a7060;
+        width:62px;
+        height:74px;
+        border-radius:48% 48% 55% 55%;
+        background:radial-gradient(ellipse at 38% 32%, #f0e8d8 0%, #d4c4a8 30%, #b09878 70%, #8a7055 100%);
+        border:1px solid rgba(100,80,55,0.5);
         cursor:pointer;
         pointer-events:all;
         position:relative;
+        box-shadow:
+          inset -6px -8px 14px rgba(0,0,0,0.35),
+          inset 3px 3px 8px rgba(255,255,240,0.2),
+          2px 4px 10px rgba(0,0,0,0.5);
       }
+      #egg-sac::before {
+        content:'';
+        position:absolute;
+        top:10px; left:12px;
+        width:16px; height:9px;
+        background:rgba(255,255,255,0.25);
+        border-radius:50%;
+        transform:rotate(-35deg);
+      }
+      #egg-sac::after {
+        content:'';
+        position:absolute;
+        top:18px; left:18px;
+        width:8px; height:5px;
+        background:rgba(255,255,255,0.12);
+        border-radius:50%;
+        transform:rotate(-20deg);
+      }
+      #egg-silk-1 { position:absolute; top:0; left:50%; width:1px; height:100%; background:rgba(220,200,170,0.15); transform:rotate(12deg); transform-origin:top center; }
+      #egg-silk-2 { position:absolute; top:0; left:50%; width:1px; height:100%; background:rgba(220,200,170,0.12); transform:rotate(-18deg); transform-origin:top center; }
+      #egg-silk-3 { position:absolute; top:30%; left:0; width:100%; height:1px; background:rgba(220,200,170,0.1); transform:rotate(5deg); }
       #egg-arrow {
-        position:fixed; top:55px; right:70px;
+        position:fixed;
+        top:118px;
+        right:108px;
         color:#13D842;
-        font-family:Times New Roman,serif;
+        font-family:'Times New Roman',serif;
         font-weight:bold;
-        font-size:13px;
+        font-size:12px;
         white-space:nowrap;
         pointer-events:none;
         text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff;
         z-index:2147483646;
+        animation:arrowblink 1.4s ease-in-out infinite;
+      }
+      @keyframes arrowblink {
+        0%,100% { opacity:1; } 50% { opacity:0.3; }
       }
       .cr8spider {
         position:fixed;
-        width:8px; height:8px;
-        background:#111;
-        border-radius:50%;
         pointer-events:none;
         z-index:2147483645;
       }
     `;
     doc.head.appendChild(st);
 
-    // Create egg wrap
     var wrap = doc.createElement('div'); wrap.id = 'egg-wrap';
     var thread = doc.createElement('div'); thread.id = 'egg-thread';
     var sac = doc.createElement('div'); sac.id = 'egg-sac';
+    var s1 = doc.createElement('div'); s1.id = 'egg-silk-1';
+    var s2 = doc.createElement('div'); s2.id = 'egg-silk-2';
+    var s3 = doc.createElement('div'); s3.id = 'egg-silk-3';
+    sac.appendChild(s1); sac.appendChild(s2); sac.appendChild(s3);
     wrap.appendChild(thread);
     wrap.appendChild(sac);
     doc.body.appendChild(wrap);
 
-    // Create arrow
     var arrow = doc.createElement('div'); arrow.id = 'egg-arrow';
     arrow.innerHTML = 'CLICK ME &#9658;';
     doc.body.appendChild(arrow);
@@ -293,7 +334,6 @@ components.html("""
     sac.addEventListener('click', burstEgg);
   }
 
-  // Reset on next nav click after burst
   doc.addEventListener('click', function(e) {
     if (!burst) return;
     var sac = doc.getElementById('egg-sac');
@@ -302,7 +342,7 @@ components.html("""
     var isNav = t.tagName === 'A' || t.closest('a') ||
                 t.tagName === 'BUTTON' || t.closest('button') ||
                 t.closest('[role=\"radio\"]') || t.closest('label');
-    if (isNav) setTimeout(resetEgg, 300);
+    if (isNav) setTimeout(resetEgg, 400);
   });
 
   function burstEgg() {
@@ -317,11 +357,12 @@ components.html("""
     var cy = rect.bottom;
     if (sac)   sac.style.visibility = 'hidden';
     if (arrow) arrow.style.display  = 'none';
-    for (var i = 0; i < 25; i++) {
-      (function() {
-        var delay = Math.random() * 150;
-        setTimeout(function() { makeSpider(cx, cy); }, delay);
-      })();
+    var W = window.parent.innerWidth;
+    var H = window.parent.innerHeight;
+    for (var i = 0; i < 40; i++) {
+      (function(i) {
+        setTimeout(function() { makeSpider(cx, cy, W, H); }, i * 30);
+      })(i);
     }
   }
 
@@ -335,27 +376,69 @@ components.html("""
     if (arrow) arrow.style.display  = 'block';
   }
 
-  function makeSpider(x, y) {
-    var s = doc.createElement('div');
-    s.className = 'cr8spider';
-    s.style.left = x + 'px';
-    s.style.top  = y + 'px';
-    doc.body.appendChild(s);
-    spiders.push(s);
+  function drawSpiderSVG(size, color) {
+    var legs = '';
+    var numLegs = 4;
+    for (var i = 0; i < numLegs; i++) {
+      var a1 = (i / numLegs) * Math.PI - 0.3;
+      var a2 = a1 + 0.6;
+      var lx1 = Math.cos(a1) * size * 1.8;
+      var ly1 = Math.sin(a1) * size * 0.9;
+      var lx2 = Math.cos(a2) * size * 2.6;
+      var ly2 = Math.sin(a2) * size * 1.4;
+      legs += '<line x1=\"' + (-size*0.5) + '\" y1=\"0\" x2=\"' + (-lx1) + '\" y2=\"' + ly1 + '\" stroke=\"' + color + '\" stroke-width=\"0.8\"/>';
+      legs += '<line x1=\"' + (-lx1) + '\" y1=\"' + ly1 + '\" x2=\"' + (-lx2) + '\" y2=\"' + ly2 + '\" stroke=\"' + color + '\" stroke-width=\"0.6\"/>';
+      legs += '<line x1=\"' + (size*0.5) + '\" y1=\"0\" x2=\"' + lx1 + '\" y2=\"' + ly1 + '\" stroke=\"' + color + '\" stroke-width=\"0.8\"/>';
+      legs += '<line x1=\"' + lx1 + '\" y1=\"' + ly1 + '\" x2=\"' + lx2 + '\" y2=\"' + ly2 + '\" stroke=\"' + color + '\" stroke-width=\"0.6\"/>';
+    }
+    var vs = size * 3;
+    return '<svg width=\"' + (vs*2) + '\" height=\"' + (vs*2) + '\" viewBox=\"' + (-vs) + ' ' + (-vs) + ' ' + (vs*2) + ' ' + (vs*2) + '\" xmlns=\"http://www.w3.org/2000/svg\">'
+      + legs
+      + '<ellipse cx=\"0\" cy=\"-' + (size*0.5) + '\" rx=\"' + (size*0.6) + '\" ry=\"' + (size*0.5) + '\" fill=\"' + color + '\"/>'
+      + '<ellipse cx=\"0\" cy=\"' + (size*0.7) + '\" rx=\"' + size + '\" ry=\"' + (size*1.1) + '\" fill=\"' + color + '\"/>'
+      + '<circle cx=\"' + (-size*0.3) + '\" cy=\"' + (-size*0.55) + '\" r=\"' + (size*0.15) + '\" fill=\"#f00\" opacity=\"0.8\"/>'
+      + '<circle cx=\"' + (size*0.3) + '\" cy=\"' + (-size*0.55) + '\" r=\"' + (size*0.15) + '\" fill=\"#f00\" opacity=\"0.8\"/>'
+      + '</svg>';
+  }
+
+  function makeSpider(cx, cy, W, H) {
+    var el = doc.createElement('div');
+    el.className = 'cr8spider';
+    var size = 5 + Math.random() * 6;
+    var colors = ['#111','#222','#1a0a00','#0a0a0a','#2a1a00'];
+    var color = colors[Math.floor(Math.random() * colors.length)];
+    el.innerHTML = drawSpiderSVG(size, color);
+    el.style.left = cx + 'px';
+    el.style.top  = cy + 'px';
+    doc.body.appendChild(el);
+    spiders.push(el);
+
     var angle = Math.random() * Math.PI * 2;
-    var speed = 2 + Math.random() * 5;
+    var speed = 3 + Math.random() * 7;
     var vx = Math.cos(angle) * speed;
     var vy = Math.sin(angle) * speed;
     var life = 0;
-    var maxLife = 100 + Math.random() * 100;
+    var maxLife = 180 + Math.random() * 200;
+    var rot = Math.random() * 360;
+
     function move() {
-      if (life >= maxLife) { s.remove(); return; }
+      if (life >= maxLife) { el.remove(); return; }
       life++;
-      vx += (Math.random() - 0.5) * 0.6;
-      vy += (Math.random() - 0.5) * 0.6;
-      s.style.left = (parseFloat(s.style.left) + vx) + 'px';
-      s.style.top  = (parseFloat(s.style.top)  + vy) + 'px';
-      s.style.opacity = 1 - (life / maxLife);
+      vx += (Math.random() - 0.5) * 0.8;
+      vy += (Math.random() - 0.5) * 0.8;
+      speed = Math.sqrt(vx*vx + vy*vy);
+      if (speed > 10) { vx *= 0.9; vy *= 0.9; }
+      var x = parseFloat(el.style.left) + vx;
+      var y = parseFloat(el.style.top)  + vy;
+      if (x < 0) { x = 0; vx *= -1; }
+      if (x > W) { x = W; vx *= -1; }
+      if (y < 0) { y = 0; vy *= -1; }
+      if (y > H) { y = H; vy *= -1; }
+      rot += 5;
+      el.style.left = x + 'px';
+      el.style.top  = y + 'px';
+      el.style.transform = 'rotate(' + rot + 'deg)';
+      el.style.opacity = Math.max(0, 1 - (life / maxLife));
       requestAnimationFrame(move);
     }
     requestAnimationFrame(move);
