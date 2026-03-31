@@ -391,34 +391,72 @@ components.html("""
   }
 
   function drawSpiderSVG(size, color) {
-    var legs = '';
-    var numLegs = 4;
-    for (var i = 0; i < numLegs; i++) {
-      var a1 = (i / numLegs) * Math.PI - 0.3;
-      var a2 = a1 + 0.6;
-      var lx1 = Math.cos(a1) * size * 1.8;
-      var ly1 = Math.sin(a1) * size * 0.9;
-      var lx2 = Math.cos(a2) * size * 2.6;
-      var ly2 = Math.sin(a2) * size * 1.4;
-      legs += '<line x1=\"' + (-size*0.5) + '\" y1=\"0\" x2=\"' + (-lx1) + '\" y2=\"' + ly1 + '\" stroke=\"' + color + '\" stroke-width=\"0.8\"/>';
-      legs += '<line x1=\"' + (-lx1) + '\" y1=\"' + ly1 + '\" x2=\"' + (-lx2) + '\" y2=\"' + ly2 + '\" stroke=\"' + color + '\" stroke-width=\"0.6\"/>';
-      legs += '<line x1=\"' + (size*0.5) + '\" y1=\"0\" x2=\"' + lx1 + '\" y2=\"' + ly1 + '\" stroke=\"' + color + '\" stroke-width=\"0.8\"/>';
-      legs += '<line x1=\"' + lx1 + '\" y1=\"' + ly1 + '\" x2=\"' + lx2 + '\" y2=\"' + ly2 + '\" stroke=\"' + color + '\" stroke-width=\"0.6\"/>';
+    var vs = size * 5;
+    var svg = '<svg width=\"' + (vs*2) + '\" height=\"' + (vs*2) + '\" viewBox=\"' + (-vs) + ' ' + (-vs) + ' ' + (vs*2) + ' ' + (vs*2) + '\" xmlns=\"http://www.w3.org/2000/svg\">';
+
+    // 8 legs, 3 segments each, spread realistically
+    var legAngles = [-1.4, -0.9, -0.4, 0.1, Math.PI-0.1, Math.PI+0.4, Math.PI+0.9, Math.PI+1.4];
+    var legSide   = [-1,-1,-1,-1,1,1,1,1];
+    for (var i = 0; i < 8; i++) {
+      var base = legAngles[i];
+      var sx = legSide[i] * size * 0.7;
+      var sy = (i < 4 ? -1 : 1) * size * 0.1;
+      // seg 1
+      var x1 = sx + Math.cos(base) * size * 2.2;
+      var y1 = sy + Math.sin(base) * size * 1.2;
+      // seg 2 — curves outward
+      var a2 = base + (legSide[i] > 0 ? 0.5 : -0.5);
+      var x2 = x1 + Math.cos(a2) * size * 2.0;
+      var y2 = y1 + Math.sin(a2) * size * 1.4;
+      // seg 3 — curls back down like real spider
+      var a3 = a2 + (legSide[i] > 0 ? 0.7 : -0.7);
+      var x3 = x2 + Math.cos(a3) * size * 1.6;
+      var y3 = y2 + Math.sin(a3) * size * 1.8;
+      var lw = (size * 0.5).toFixed(1);
+      var lw2 = (size * 0.35).toFixed(1);
+      var lw3 = (size * 0.2).toFixed(1);
+      svg += '<line x1=\"'+sx+'\" y1=\"'+sy+'\" x2=\"'+x1+'\" y2=\"'+y1+'\" stroke=\"'+color+'\" stroke-width=\"'+lw+'\" stroke-linecap=\"round\"/>';
+      svg += '<line x1=\"'+x1+'\" y1=\"'+y1+'\" x2=\"'+x2+'\" y2=\"'+y2+'\" stroke=\"'+color+'\" stroke-width=\"'+lw2+'\" stroke-linecap=\"round\"/>';
+      svg += '<line x1=\"'+x2+'\" y1=\"'+y2+'\" x2=\"'+x3+'\" y2=\"'+y3+'\" stroke=\"'+color+'\" stroke-width=\"'+lw3+'\" stroke-linecap=\"round\"/>';
     }
-    var vs = size * 3;
-    return '<svg width=\"' + (vs*2) + '\" height=\"' + (vs*2) + '\" viewBox=\"' + (-vs) + ' ' + (-vs) + ' ' + (vs*2) + ' ' + (vs*2) + '\" xmlns=\"http://www.w3.org/2000/svg\">'
-      + legs
-      + '<ellipse cx=\"0\" cy=\"-' + (size*0.5) + '\" rx=\"' + (size*0.6) + '\" ry=\"' + (size*0.5) + '\" fill=\"' + color + '\"/>'
-      + '<ellipse cx=\"0\" cy=\"' + (size*0.7) + '\" rx=\"' + size + '\" ry=\"' + (size*1.1) + '\" fill=\"' + color + '\"/>'
-      + '<circle cx=\"' + (-size*0.3) + '\" cy=\"' + (-size*0.55) + '\" r=\"' + (size*0.15) + '\" fill=\"#f00\" opacity=\"0.8\"/>'
-      + '<circle cx=\"' + (size*0.3) + '\" cy=\"' + (-size*0.55) + '\" r=\"' + (size*0.15) + '\" fill=\"#f00\" opacity=\"0.8\"/>'
-      + '</svg>';
+
+    // Abdomen — large teardrop with markings
+    var aw = size * 1.6; var ah = size * 2.2;
+    svg += '<ellipse cx=\"0\" cy=\"'+(size*1.2)+'\" rx=\"'+aw+'\" ry=\"'+ah+'\" fill=\"'+color+'\"/>';
+    // Abdomen highlight
+    svg += '<ellipse cx=\"'+(size*-0.4)+'\" cy=\"'+(size*0.5)+'\" rx=\"'+(size*0.5)+'\" ry=\"'+(size*0.35)+'\" fill=\"rgba(255,255,255,0.12)\" transform=\"rotate(-20,0,'+size*1.2+')\" />';
+    // Abdomen stripe markings
+    svg += '<ellipse cx=\"0\" cy=\"'+(size*1.1)+'\" rx=\"'+(size*0.5)+'\" ry=\"'+(size*0.25)+'\" fill=\"rgba(255,165,0,0.25)\"/>';
+    svg += '<ellipse cx=\"0\" cy=\"'+(size*1.8)+'\" rx=\"'+(size*0.4)+'\" ry=\"'+(size*0.2)+'\" fill=\"rgba(255,165,0,0.18)\"/>';
+
+    // Cephalothorax — oval head/body
+    var cw = size * 1.1; var ch = size * 0.9;
+    svg += '<ellipse cx=\"0\" cy=\"'+(size*-0.4)+'\" rx=\"'+cw+'\" ry=\"'+ch+'\" fill=\"'+color+'\"/>';
+    svg += '<ellipse cx=\"'+(size*-0.3)+'\" cy=\"'+(size*-0.65)+'\" rx=\"'+(size*0.35)+'\" ry=\"'+(size*0.22)+'\" fill=\"rgba(255,255,255,0.1)\" transform=\"rotate(-15)\"/>';
+
+    // 8 eyes in two rows
+    var eyeR = size * 0.18;
+    var eyePositions = [
+      [-size*0.55, -size*0.7], [-size*0.2, -size*0.82], [size*0.2, -size*0.82], [size*0.55, -size*0.7],
+      [-size*0.35, -size*0.52], [-size*0.1, -size*0.58], [size*0.1, -size*0.58], [size*0.35, -size*0.52]
+    ];
+    var eyeColors = ['#ff0000','#ff4400','#ff0000','#ff0000','#ffffff','#ffffff','#ffffff','#ffffff'];
+    for (var e = 0; e < eyePositions.length; e++) {
+      svg += '<circle cx=\"'+eyePositions[e][0]+'\" cy=\"'+eyePositions[e][1]+'\" r=\"'+eyeR+'\" fill=\"'+eyeColors[e]+'\" opacity=\"0.9\"/>';
+    }
+
+    // Pedipalps (small front appendages)
+    svg += '<line x1=\"'+(size*-0.5)+'\" y1=\"'+(size*-0.7)+'\" x2=\"'+(size*-1.2)+'\" y2=\"'+(size*-1.3)+'\" stroke=\"'+color+'\" stroke-width=\"'+(size*0.25)+'\" stroke-linecap=\"round\"/>';
+    svg += '<line x1=\"'+(size*0.5)+'\" y1=\"'+(size*-0.7)+'\" x2=\"'+(size*1.2)+'\" y2=\"'+(size*-1.3)+'\" stroke=\"'+color+'\" stroke-width=\"'+(size*0.25)+'\" stroke-linecap=\"round\"/>';
+
+    svg += '</svg>';
+    return svg;
   }
 
   function makeSpider(cx, cy, W, H) {
     var el = doc.createElement('div');
     el.className = 'cr8spider';
-    var size = 5 + Math.random() * 6;
+    var size = 7 + Math.random() * 8;
     var colors = ['#111','#222','#1a0a00','#0a0a0a','#2a1a00'];
     var color = colors[Math.floor(Math.random() * colors.length)];
     el.innerHTML = drawSpiderSVG(size, color);
@@ -428,11 +466,11 @@ components.html("""
     spiders.push(el);
 
     var angle = Math.random() * Math.PI * 2;
-    var speed = 3 + Math.random() * 7;
+    var speed = 4 + Math.random() * 8;
     var vx = Math.cos(angle) * speed;
     var vy = Math.sin(angle) * speed;
     var life = 0;
-    var maxLife = 180 + Math.random() * 200;
+    var maxLife = 220 + Math.random() * 250;
     var rot = Math.random() * 360;
 
     function move() {
