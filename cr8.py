@@ -259,8 +259,8 @@ components.html("""
         border-radius:0 0 1px 1px;
       }
       #egg-sac {
-        width:76px;
-        height:90px;
+        width:52px;
+        height:62px;
         border-radius:45% 45% 52% 52%;
         background:
           radial-gradient(ellipse at 35% 28%, rgba(255,248,230,0.9) 0%, rgba(220,195,155,0.7) 20%, transparent 50%),
@@ -394,6 +394,50 @@ components.html("""
     }
     animateBabies();
 
+    // Spider web in top right corner
+    var webSvg = doc.createElementNS('http://www.w3.org/2000/svg','svg');
+    webSvg.id = 'egg-web';
+    webSvg.setAttribute('width','180');
+    webSvg.setAttribute('height','180');
+    webSvg.style.cssText = 'position:fixed;top:0;right:0;z-index:2147483644;pointer-events:none;opacity:0.55;';
+    webSvg.innerHTML = `
+      <defs>
+        <style>
+          .wl { stroke:rgba(210,200,180,0.7); stroke-width:0.8; fill:none; }
+          .wl2 { stroke:rgba(210,200,180,0.4); stroke-width:0.5; fill:none; }
+        </style>
+      </defs>
+      <!-- Radial spokes from top-right corner (180,0) -->
+      <line class="wl" x1="180" y1="0" x2="0"   y2="0"  />
+      <line class="wl" x1="180" y1="0" x2="20"  y2="40" />
+      <line class="wl" x1="180" y1="0" x2="50"  y2="90" />
+      <line class="wl" x1="180" y1="0" x2="90"  y2="140"/>
+      <line class="wl" x1="180" y1="0" x2="130" y2="175"/>
+      <line class="wl" x1="180" y1="0" x2="180" y2="180"/>
+      <line class="wl" x1="180" y1="0" x2="155" y2="60" />
+      <line class="wl" x1="180" y1="0" x2="170" y2="110"/>
+
+      <!-- Concentric web rings -->
+      <path class="wl2" d="M155,0 Q140,8 130,20 Q110,38 95,55 Q75,72 55,82 Q35,90 18,88 Q5,85 0,75"/>
+      <path class="wl2" d="M130,0 Q112,12 98,28 Q78,50 60,70 Q42,88 24,98 Q10,105 0,100"/>
+      <path class="wl2" d="M100,0 Q84,14 70,32 Q52,54 36,74 Q20,92 6,105 Q0,110 0,115"/>
+      <path class="wl2" d="M70,0  Q56,14 44,30 Q28,52 16,72 Q6,90 0,105"/>
+      <path class="wl2" d="M40,0  Q28,12 18,26 Q8,44 2,62 Q0,70 0,78"/>
+      <path class="wl2" d="M15,0  Q10,8 6,18 Q2,30 0,42"/>
+
+      <!-- Dew drop dots on web -->
+      <circle cx="130" cy="20" r="1.5" fill="rgba(200,220,255,0.6)"/>
+      <circle cx="95"  cy="55" r="1.2" fill="rgba(200,220,255,0.5)"/>
+      <circle cx="60"  cy="70" r="1.4" fill="rgba(200,220,255,0.6)"/>
+      <circle cx="55"  cy="82" r="1.0" fill="rgba(200,220,255,0.4)"/>
+      <circle cx="98"  cy="28" r="1.2" fill="rgba(200,220,255,0.5)"/>
+      <circle cx="36"  cy="74" r="1.1" fill="rgba(200,220,255,0.5)"/>
+      <circle cx="155" cy="60" r="1.3" fill="rgba(200,220,255,0.4)"/>
+      <circle cx="170" cy="110"r="1.2" fill="rgba(200,220,255,0.4)"/>
+      <circle cx="18"  cy="88" r="1.0" fill="rgba(200,220,255,0.4)"/>
+    `;
+    doc.body.appendChild(webSvg);
+
     var arrow = doc.createElement('div'); arrow.id = 'egg-arrow';
     arrow.innerHTML = 'CLICK ME &#9658;';
     doc.body.appendChild(arrow);
@@ -509,7 +553,7 @@ components.html("""
   function makeSpider(cx, cy, W, H) {
     var el = doc.createElement('div');
     el.className = 'cr8spider';
-    var size = 5 + Math.random() * 6;
+    var size = 3 + Math.random() * 3;
     var colors = ['#111','#222','#1a0a00','#0a0a0a','#2a1a00'];
     var color = colors[Math.floor(Math.random() * colors.length)];
     el.innerHTML = drawSpiderSVG(size, color);
