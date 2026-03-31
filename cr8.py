@@ -223,6 +223,203 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# ---- Spider Egg Sac Effect ----
+st.markdown("""
+<style>
+#egg-sac-wrap {
+  position:fixed;
+  top:0;
+  right:24px;
+  z-index:2147483646;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  pointer-events:none;
+}
+#egg-sac-thread {
+  width:2px;
+  height:40px;
+  background:rgba(180,180,180,0.5);
+}
+#egg-sac {
+  width:38px;
+  height:44px;
+  background:radial-gradient(ellipse at 40% 35%, #e8e0d0, #b8a898);
+  border-radius:50% 50% 55% 55%;
+  box-shadow:inset -4px -4px 8px rgba(0,0,0,0.3), 2px 2px 6px rgba(0,0,0,0.4);
+  cursor:pointer;
+  pointer-events:all;
+  position:relative;
+  border:1px solid rgba(120,100,80,0.4);
+  animation:eggsway 3s ease-in-out infinite;
+}
+#egg-sac::before {
+  content:'';
+  position:absolute;
+  top:6px; left:8px;
+  width:10px; height:6px;
+  background:rgba(255,255,255,0.3);
+  border-radius:50%;
+  transform:rotate(-30deg);
+}
+#egg-arrow {
+  position:absolute;
+  right:70px;
+  top:55px;
+  color:#13D842;
+  font-family:'Times New Roman',serif;
+  font-weight:bold;
+  font-size:13px;
+  text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff;
+  white-space:nowrap;
+  pointer-events:none;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  animation:arrowpulse 1.5s ease-in-out infinite;
+}
+#egg-arrow::after {
+  content:'';
+  display:inline-block;
+  width:0; height:0;
+  border-top:6px solid transparent;
+  border-bottom:6px solid transparent;
+  border-left:10px solid #13D842;
+}
+@keyframes eggsway {
+  0%,100% { transform:rotate(-4deg); }
+  50%      { transform:rotate(4deg); }
+}
+@keyframes arrowpulse {
+  0%,100% { opacity:1; }
+  50%      { opacity:0.4; }
+}
+.spider {
+  position:fixed;
+  width:10px;
+  height:10px;
+  background:#111;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:2147483645;
+  transition:none;
+}
+.spider::before, .spider::after {
+  content:'';
+  position:absolute;
+  width:8px;
+  height:1px;
+  background:#333;
+  top:4px;
+}
+.spider::before { right:9px; transform:rotate(-30deg); }
+.spider::after  { left:9px;  transform:rotate(30deg); }
+</style>
+
+<div id="egg-sac-wrap">
+  <div id="egg-sac-thread"></div>
+  <div id="egg-sac"></div>
+</div>
+<div id="egg-arrow">CLICK ME</div>
+""", unsafe_allow_html=True)
+
+components.html("""
+<script>
+(function() {
+  var doc = window.parent.document;
+  var spiders = [];
+  var burst = false;
+
+  function getEgg() { return doc.getElementById('egg-sac'); }
+  function getWrap() { return doc.getElementById('egg-sac-wrap'); }
+  function getArrow() { return doc.getElementById('egg-arrow'); }
+
+  function makeSpider(x, y) {
+    var s = doc.createElement('div');
+    s.className = 'spider';
+    s.style.left = x + 'px';
+    s.style.top  = y + 'px';
+    doc.body.appendChild(s);
+    spiders.push(s);
+
+    var angle = Math.random() * Math.PI * 2;
+    var speed = 2 + Math.random() * 4;
+    var vx = Math.cos(angle) * speed;
+    var vy = Math.sin(angle) * speed;
+    var life = 0;
+    var maxLife = 120 + Math.random() * 80;
+
+    function move() {
+      if (life >= maxLife) { s.remove(); return; }
+      life++;
+      var cx = parseFloat(s.style.left);
+      var cy = parseFloat(s.style.top);
+      vx += (Math.random() - 0.5) * 0.5;
+      vy += (Math.random() - 0.5) * 0.5;
+      s.style.left = (cx + vx) + 'px';
+      s.style.top  = (cy + vy) + 'px';
+      s.style.opacity = 1 - (life / maxLife);
+      requestAnimationFrame(move);
+    }
+    requestAnimationFrame(move);
+  }
+
+  function burstEgg() {
+    if (burst) return;
+    burst = true;
+    var wrap = getWrap();
+    var arrow = getArrow();
+    var egg = getEgg();
+    if (!wrap) return;
+
+    var rect = wrap.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2;
+    var cy = rect.top + rect.height;
+
+    if (egg) egg.style.opacity = '0';
+    if (arrow) arrow.style.display = 'none';
+
+    for (var i = 0; i < 30; i++) {
+      setTimeout(function() { makeSpider(cx, cy); }, Math.random() * 200);
+    }
+  }
+
+  function resetEgg() {
+    burst = false;
+    spiders.forEach(function(s) { try { s.remove(); } catch(e) {} });
+    spiders = [];
+    var egg = getEgg();
+    var arrow = getArrow();
+    if (egg) egg.style.opacity = '1';
+    if (arrow) arrow.style.display = 'flex';
+  }
+
+  function attachEgg() {
+    var egg = getEgg();
+    if (egg && !egg.dataset.spiderAttached) {
+      egg.dataset.spiderAttached = '1';
+      egg.addEventListener('click', burstEgg);
+    }
+  }
+
+  // Reset on next nav/button click after burst
+  doc.addEventListener('click', function(e) {
+    if (!burst) return;
+    var egg = doc.getElementById('egg-sac');
+    if (e.target === egg || egg && egg.contains(e.target)) return;
+    var t = e.target;
+    var isNav = t.tagName === 'A' || t.closest('a') ||
+                t.tagName === 'BUTTON' || t.closest('button') ||
+                t.closest('[role="radio"]') || t.closest('label');
+    if (isNav) setTimeout(resetEgg, 300);
+  });
+
+  attachEgg();
+  setInterval(attachEgg, 1000);
+})();
+</script>
+""", height=0)
+
 # ---- TV Loading Screen ----
 st.markdown(f"""
 <style>
