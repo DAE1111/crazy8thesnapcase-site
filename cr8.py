@@ -764,21 +764,19 @@ def skull_subheader(text):
 
 if menu == NAV_HOME:
     skull_header("WHO IS CRAZY8 THE SNAP CASE")
-    st.markdown(
-        f'''<div style="
-            text-align:center;
-            font-family:'Times New Roman',Times,serif;
-            font-weight:700;
-            font-size:28px;
-            color:{TEXT_COLOR};
-            text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff;
-            line-height:1.6;
-            max-width:860px;
-            margin:0 auto;
-            padding:0 20px;
-        ">{BIO}</div>''',
-        unsafe_allow_html=True
+    bio_style = (
+        'text-align:center;'
+        'font-family:Times New Roman,Times,serif;'
+        'font-weight:700;'
+        'font-size:28px;'
+        'color:' + TEXT_COLOR + ';'
+        'text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff;'
+        'line-height:1.6;'
+        'max-width:860px;'
+        'margin:0 auto;'
+        'padding:0 20px;'
     )
+    st.markdown('<div style="' + bio_style + '">' + BIO + '</div>', unsafe_allow_html=True)
     if cr8_bio_img:
         st.markdown(
             f'<div style="text-align:center;margin-top:1rem;">'
