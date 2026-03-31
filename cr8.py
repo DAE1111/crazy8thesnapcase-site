@@ -259,8 +259,8 @@ components.html("""
         border-radius:0 0 1px 1px;
       }
       #egg-sac {
-        width:100px;
-        height:120px;
+        width:76px;
+        height:90px;
         border-radius:45% 45% 52% 52%;
         background:
           radial-gradient(ellipse at 35% 28%, rgba(255,248,230,0.9) 0%, rgba(220,195,155,0.7) 20%, transparent 50%),
@@ -337,9 +337,62 @@ components.html("""
     var s4 = doc.createElement('div'); s4.id = 'egg-silk-4';
     var s5 = doc.createElement('div'); s5.id = 'egg-silk-5';
     sac.appendChild(s1); sac.appendChild(s2); sac.appendChild(s3); sac.appendChild(s4); sac.appendChild(s5);
+
+    // Canvas for wriggling babies inside sac
+    var eggCanvas = doc.createElement('canvas');
+    eggCanvas.id = 'egg-canvas';
+    eggCanvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border-radius:45% 45% 52% 52%;pointer-events:none;z-index:2;opacity:0.75;';
+    sac.appendChild(eggCanvas);
+
     wrap.appendChild(thread);
     wrap.appendChild(sac);
     doc.body.appendChild(wrap);
+
+    // Animate babies inside
+    var babies = [];
+    for (var b = 0; b < 18; b++) {
+      babies.push({
+        x: 0.2 + Math.random() * 0.6,
+        y: 0.2 + Math.random() * 0.6,
+        vx: (Math.random()-0.5)*0.012,
+        vy: (Math.random()-0.5)*0.012,
+        r: 0.03 + Math.random()*0.04,
+        color: Math.random() < 0.5 ? '#2a1a00' : '#111'
+      });
+    }
+    function animateBabies() {
+      var c = doc.getElementById('egg-canvas');
+      if (!c) return;
+      c.width  = c.offsetWidth  || 76;
+      c.height = c.offsetHeight || 90;
+      var cx = c.getContext('2d');
+      cx.clearRect(0, 0, c.width, c.height);
+      babies.forEach(function(b) {
+        b.x += b.vx + (Math.random()-0.5)*0.008;
+        b.y += b.vy + (Math.random()-0.5)*0.008;
+        if (b.x < 0.15 || b.x > 0.85) b.vx *= -1;
+        if (b.y < 0.15 || b.y > 0.85) b.vy *= -1;
+        var px = b.x * c.width;
+        var py = b.y * c.height;
+        var pr = b.r * Math.min(c.width, c.height);
+        cx.beginPath();
+        cx.arc(px, py, pr, 0, Math.PI*2);
+        cx.fillStyle = b.color;
+        cx.fill();
+        // tiny legs
+        for (var l = 0; l < 4; l++) {
+          var la = (l/4)*Math.PI*2;
+          cx.beginPath();
+          cx.moveTo(px, py);
+          cx.lineTo(px + Math.cos(la)*pr*2.5, py + Math.sin(la)*pr*2.5);
+          cx.strokeStyle = b.color;
+          cx.lineWidth = 0.5;
+          cx.stroke();
+        }
+      });
+      requestAnimationFrame(animateBabies);
+    }
+    animateBabies();
 
     var arrow = doc.createElement('div'); arrow.id = 'egg-arrow';
     arrow.innerHTML = 'CLICK ME &#9658;';
@@ -456,7 +509,7 @@ components.html("""
   function makeSpider(cx, cy, W, H) {
     var el = doc.createElement('div');
     el.className = 'cr8spider';
-    var size = 7 + Math.random() * 8;
+    var size = 5 + Math.random() * 6;
     var colors = ['#111','#222','#1a0a00','#0a0a0a','#2a1a00'];
     var color = colors[Math.floor(Math.random() * colors.length)];
     el.innerHTML = drawSpiderSVG(size, color);
