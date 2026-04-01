@@ -553,47 +553,13 @@ components.html(f"""
 """, height=0)
 
 
-# ---- Logo — injected via components.html to bypass Streamlit's HTML sanitizer ----
+# ---- Logo ----
 if cr8_logo:
-    components.html(f"""
-<style>
-#cr8-logo-wrap {{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0;
-    background: transparent;
-}}
-#cr8-logo-wrap img {{
-    width: 1137px;
-    max-width: 90%;
-    opacity: 0.50;
-    display: block;
-}}
-</style>
-<div id="cr8-logo-wrap">
-  <img src="data:image/png;base64,{cr8_logo}">
-</div>
-<script>
-(function() {{
-  var doc = window.parent.document;
-  var wrap = doc.getElementById('cr8-logo-wrap');
-  if (!wrap) {{
-    var frame = window.frameElement;
-    if (frame) {{
-      frame.style.background = 'transparent';
-      frame.style.border = 'none';
-      frame.style.display = 'block';
-      frame.style.width = '100%';
-      frame.style.margin = '0';
-      frame.style.padding = '0';
-    }}
-  }}
-}})();
-</script>
-""", height=700, scrolling=False)
+    st.markdown('''<style>
+.cr8logo-wrap { display:flex; justify-content:center; align-items:center; width:100%; margin:0; padding:0; }
+.cr8logo-wrap img { width:1137px; max-width:90vw; opacity:0.50; display:block; height:auto; }
+</style>''', unsafe_allow_html=True)
+    st.markdown(f'<div class="cr8logo-wrap"><img src="data:image/png;base64,{cr8_logo}"></div>', unsafe_allow_html=True)
 elif ARTIST_NAME:
     st.markdown(f'<div style="text-align:center;"><h1>{ARTIST_NAME}</h1></div>', unsafe_allow_html=True)
 
