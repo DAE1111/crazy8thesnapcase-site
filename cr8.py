@@ -593,7 +593,7 @@ if cr8_logo:
   }}
 }})();
 </script>
-""", height=160, scrolling=False)
+""", height=500, scrolling=False)
 elif ARTIST_NAME:
     st.markdown(f'<div style="text-align:center;"><h1>{ARTIST_NAME}</h1></div>', unsafe_allow_html=True)
 
