@@ -553,22 +553,47 @@ components.html(f"""
 """, height=0)
 
 
-# ---- Logo — 784px on desktop, same max-width:90% cap, no mobile upscaling ----
+# ---- Logo — injected via components.html to bypass Streamlit's HTML sanitizer ----
 if cr8_logo:
-    st.markdown(
-        f'''<style>
-        .cr8logo {{
-            width: 784px;
-            max-width: 90%;
-            opacity: 0.50;
-            display: block;
-        }}
-        </style>
-        <div style="display:flex;justify-content:center;align-items:center;width:100%;margin:0 auto;">
-          <img src="data:image/png;base64,{cr8_logo}" class="cr8logo">
-        </div>''',
-        unsafe_allow_html=True
-    )
+    components.html(f"""
+<style>
+#cr8-logo-wrap {{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    background: transparent;
+}}
+#cr8-logo-wrap img {{
+    width: 784px;
+    max-width: 90%;
+    opacity: 0.50;
+    display: block;
+}}
+</style>
+<div id="cr8-logo-wrap">
+  <img src="data:image/png;base64,{cr8_logo}">
+</div>
+<script>
+(function() {{
+  var doc = window.parent.document;
+  var wrap = doc.getElementById('cr8-logo-wrap');
+  if (!wrap) {{
+    var frame = window.frameElement;
+    if (frame) {{
+      frame.style.background = 'transparent';
+      frame.style.border = 'none';
+      frame.style.display = 'block';
+      frame.style.width = '100%';
+      frame.style.margin = '0';
+      frame.style.padding = '0';
+    }}
+  }}
+}})();
+</script>
+""", height=160, scrolling=False)
 elif ARTIST_NAME:
     st.markdown(f'<div style="text-align:center;"><h1>{ARTIST_NAME}</h1></div>', unsafe_allow_html=True)
 
