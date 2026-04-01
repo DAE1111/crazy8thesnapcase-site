@@ -139,7 +139,7 @@ st.markdown(f"""
     }}
     h1,h2,h3,h4,h5,h6 {{
         font-family: 'Warsuck', serif !important;
-        font-size: 48px !important;
+        font-size: 44px !important;
         letter-spacing: 4px;
         text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 10px {TEXT_COLOR};
     }}
