@@ -305,8 +305,8 @@ components.html("""
       #egg-silk-5 { position:absolute; top:0; left:30%; width:1px; height:100%; background:rgba(200,175,140,0.1); transform:rotate(25deg); transform-origin:top center; }
       #egg-arrow {
         position:absolute;
-        top:60px;
-        right:65px;
+        top:45px;
+        right:105px;
         color:#13D842;
         font-family:'Times New Roman',serif;
         font-weight:bold;
@@ -616,37 +616,29 @@ components.html("""
     var maxLife = 220 + Math.random() * 250;
     var rot = Math.random() * 360;
 
-    // Spider faces direction of travel, no spinning
-    var heading = Math.atan2(vy, vx) * (180/Math.PI);
-
+    // No rotation at all — spiders just translate across screen naturally
     function move() {
       if (life >= maxLife) { el.remove(); return; }
       life++;
 
-      // Small random steering — spiders change direction gradually not randomly
-      var steer = (Math.random() - 0.5) * 0.3;
-      var ang = Math.atan2(vy, vx) + steer;
+      // Gentle random steering like a real spider scurrying
+      vx += (Math.random() - 0.5) * 0.15;
+      vy += (Math.random() - 0.5) * 0.15;
+
+      // Cap speed
       var spd = Math.sqrt(vx*vx + vy*vy);
-      // Slight deceleration over time like a real spider slowing down
-      spd = Math.max(0.8, spd * 0.995);
-      vx = Math.cos(ang) * spd;
-      vy = Math.sin(ang) * spd;
+      if (spd > 8) { vx = (vx/spd)*8; vy = (vy/spd)*8; }
 
       var x = parseFloat(el.style.left) + vx;
       var y = parseFloat(el.style.top)  + vy;
 
-      // Bounce off edges
-      if (x < 0)  { x = 0;  vx *= -1; ang = Math.atan2(vy, vx); }
-      if (x > W)  { x = W;  vx *= -1; ang = Math.atan2(vy, vx); }
-      if (y < 0)  { y = 0;  vy *= -1; ang = Math.atan2(vy, vx); }
-      if (y > H)  { y = H;  vy *= -1; ang = Math.atan2(vy, vx); }
-
-      // Rotate to face direction of travel only
-      heading = ang * (180/Math.PI);
+      if (x < 0)  { x = 0;  vx = Math.abs(vx); }
+      if (x > W)  { x = W;  vx = -Math.abs(vx); }
+      if (y < 0)  { y = 0;  vy = Math.abs(vy); }
+      if (y > H)  { y = H;  vy = -Math.abs(vy); }
 
       el.style.left = x + 'px';
       el.style.top  = y + 'px';
-      el.style.transform = 'rotate(' + heading + 'deg)';
       el.style.opacity = Math.max(0, 1 - (life / maxLife));
       requestAnimationFrame(move);
     }
