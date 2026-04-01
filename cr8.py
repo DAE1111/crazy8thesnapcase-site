@@ -18,7 +18,7 @@ BG_FILE       = ""
 #  STEP 2 — COLORS
 # ============================================================
 
-TEXT_COLOR    = "#13D842"
+TEXT_COLOR    = "#0DA832"
 BG_COLOR      = "#000000"
 
 # ============================================================
@@ -161,6 +161,7 @@ st.markdown(f"""
         font-family: 'Times New Roman', Times, serif;
         font-weight: bold;
         font-size: 1.05rem;
+        text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
         transition: color 0.2s ease, text-shadow 0.2s ease;
     }}
     .disc-link a:hover {{
@@ -172,6 +173,7 @@ st.markdown(f"""
         opacity: 0.6;
         font-size: 0.9rem;
         margin-left: 0.5rem;
+        text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -187,7 +189,7 @@ st.markdown("""
   position:fixed; top:70px; left:8px; z-index:9999;
   display:flex; align-items:center; gap:6px;
   background:rgba(0,0,0,0.82);
-  border:1px solid #13D842;
+  border:1px solid #0DA832;
   border-radius:4px;
   padding:6px 12px;
   animation:cr8NavPulse 2s ease-in-out infinite;
@@ -197,14 +199,14 @@ st.markdown("""
   font-family:'Times New Roman',Times,serif;
   font-weight:bold;
   font-size:11px;
-  color:#13D842;
+  color:#0DA832;
   letter-spacing:1px;
   white-space:normal;
   word-break:break-word;
   width:72px;
   text-align:center;
   line-height:1.4;
-  text-shadow:0 0 6px #13D842;
+  text-shadow:0 0 6px #0DA832;
 }
 </style>
 <div id="cr8-nav-hint">
@@ -304,8 +306,8 @@ st.markdown(f"""
 }}
 #power-light {{
   width:0.6vw; height:0.6vw;
-  background:#13D842; border-radius:50%;
-  box-shadow:0 0 6px #13D842,0 0 12px #13D842;
+  background:#0DA832; border-radius:50%;
+  box-shadow:0 0 6px #0DA832,0 0 12px #0DA832;
   margin-top:1vh;
 }}
 @media (max-width:768px) {{
@@ -352,11 +354,11 @@ st.markdown(f"""
   transform:translate(-50%,-50%); z-index:6;
   font-family:'VT323', monospace;
   font-size:5vw;
-  color:#13D842; background:rgba(0,0,0,0.85);
-  border:3px solid #13D842;
+  color:#0DA832; background:rgba(0,0,0,0.85);
+  border:3px solid #0DA832;
   padding:2vh 5vw; letter-spacing:8px;
   cursor:pointer; white-space:nowrap;
-  text-shadow:0 0 20px #13D842,0 0 40px #13D842;
+  text-shadow:0 0 20px #0DA832,0 0 40px #0DA832;
   animation:playpulse 1.2s ease-in-out infinite;
 }}
 @keyframes playpulse {{
@@ -369,7 +371,7 @@ st.markdown(f"""
   text-align:center; z-index:5; width:90%;
   font-family:'VT323', monospace;
   font-size:5vw; color:#00CFFF; letter-spacing:8px;
-  text-shadow:0 0 4px #00CFFF,0 0 12px #00CFFF,0 0 30px #0088ff,0 0 40px #13D842,2px 2px 0px rgba(255,0,200,0.4);
+  text-shadow:0 0 4px #00CFFF,0 0 12px #00CFFF,0 0 30px #0088ff,0 0 40px #0DA832,2px 2px 0px rgba(255,0,200,0.4);
   background:rgba(15,15,15,0.80);
   padding:1.5vh 4vw; border-radius:4px;
   animation:cr8flicker 0.15s steps(1,end) infinite;
@@ -387,8 +389,8 @@ st.markdown(f"""
   box-shadow:0 0 14px #00CFFF,inset 0 0 10px rgba(0,180,255,0.1);
 }}
 @keyframes cr8pulse {{
-  0%,100% {{ box-shadow:0 0 10px #13D842,0 0 20px #13D842; }}
-  50%      {{ box-shadow:0 0 30px #13D842,0 0 60px #13D842; }}
+  0%,100% {{ box-shadow:0 0 10px #0DA832,0 0 20px #0DA832; }}
+  50%      {{ box-shadow:0 0 30px #0DA832,0 0 60px #0DA832; }}
 }}
 @keyframes cr8flicker {{
   0%,89%,100% {{ opacity:1; }} 90% {{ opacity:0.3; }} 95% {{ opacity:0.8; }}
