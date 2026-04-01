@@ -304,21 +304,26 @@ components.html("""
       #egg-silk-4 { position:absolute; top:55%; left:-5%; width:110%; height:1px; background:rgba(200,175,140,0.12); transform:rotate(-3deg); }
       #egg-silk-5 { position:absolute; top:0; left:30%; width:1px; height:100%; background:rgba(200,175,140,0.1); transform:rotate(25deg); transform-origin:top center; }
       #egg-arrow {
-        position:fixed;
-        top:215px;
-        right:155px;
+        position:absolute;
+        top:60px;
+        right:65px;
         color:#13D842;
         font-family:'Times New Roman',serif;
         font-weight:bold;
-        font-size:12px;
+        font-size:16px;
         white-space:nowrap;
         pointer-events:none;
-        text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff;
+        text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000, 0 0 8px #13D842;
         z-index:2147483646;
-        animation:arrowblink 1.4s ease-in-out infinite;
+        background:rgba(0,0,0,0.55);
+        padding:4px 8px;
+        border-radius:3px;
+        border:1px solid #13D842;
+        animation:arrowblink 1.2s ease-in-out infinite;
       }
       @keyframes arrowblink {
-        0%,100% { opacity:1; } 50% { opacity:0.3; }
+        0%,100% { opacity:1; box-shadow:0 0 8px #13D842; }
+        50%      { opacity:0.5; box-shadow:0 0 18px #13D842; }
       }
       .cr8spider {
         position:fixed;
@@ -400,61 +405,79 @@ components.html("""
     webSvg.setAttribute('width','240');
     webSvg.setAttribute('height','240');
     webSvg.style.cssText = 'position:fixed;top:0;right:0;z-index:2147483644;pointer-events:none;opacity:0.55;';
-    // Cobweb — radiates from corner, straight spokes, straight connecting lines
-    var W2 = 240; var H2 = 240;
+    // Proper corner cobweb — sac hangs inside it
+    var W2 = 260; var H2 = 260;
+    var cx = W2; var cy = 0; // top-right corner origin
     var webLines = '';
 
-    // 10 spokes from corner (240,0) sweeping from left to down
-    var numSpokes = 10;
-    var numRings  = 8;
-    var maxR      = 230;
-
-    // spoke endpoints
+    // 12 spokes fanning from corner covering top edge and right side
+    var numSpokes = 12;
+    var numRings  = 10;
+    var maxR      = 248;
     var spokes = [];
     for (var i = 0; i <= numSpokes; i++) {
       var ang = Math.PI + (i / numSpokes) * (Math.PI / 2);
       spokes.push([
-        W2 + Math.cos(ang) * maxR,
-        0  + Math.sin(ang) * maxR
+        cx + Math.cos(ang) * maxR,
+        cy + Math.sin(ang) * maxR
       ]);
     }
 
-    // Draw spokes — thicker near corner, taper out
+    // Anchor threads from corner edges (top bar and right edge)
+    // Extra threads connecting sac area to the web
+    var anchors = [
+      [W2, 0, 0, 0],         // corner to top-left of svg
+      [W2, 0, W2, H2],       // corner straight down
+      [W2, 0, W2*0.55, 0],   // along top edge
+      [W2, 0, W2, H2*0.55],  // along right edge
+    ];
+    anchors.forEach(function(a) {
+      webLines += '<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+a[2]+'" y2="'+a[3]+'"'
+               + ' stroke="rgba(215,205,180,0.85)" stroke-width="1.1"/>';
+    });
+
+    // Main spokes
     for (var i = 0; i < spokes.length; i++) {
-      webLines += '<line x1="'+W2+'" y1="0" x2="'+spokes[i][0].toFixed(1)+'" y2="'+spokes[i][1].toFixed(1)+'"'
-               + ' stroke="rgba(210,200,175,0.8)" stroke-width="0.9"/>';
+      webLines += '<line x1="'+cx+'" y1="'+cy+'" x2="'+spokes[i][0].toFixed(1)+'" y2="'+spokes[i][1].toFixed(1)+'"'
+               + ' stroke="rgba(215,205,180,0.78)" stroke-width="0.85"/>';
     }
 
-    // Draw concentric rings as STRAIGHT lines between spoke points (cobweb style)
+    // Concentric rings — straight lines between spoke points
     for (var r = 1; r <= numRings; r++) {
       var t   = r / numRings;
-      // slightly irregular ring radii
       var pts = [];
       for (var i = 0; i < spokes.length; i++) {
-        var jit = 1.0 + (Math.sin(i * 1.7 + r * 2.3) * 0.045);
+        var jit = 1.0 + (Math.sin(i * 2.1 + r * 1.7) * 0.04);
         pts.push([
-          W2  + (spokes[i][0] - W2) * t * jit,
-          0   + (spokes[i][1] - 0)  * t * jit
+          cx + (spokes[i][0] - cx) * t * jit,
+          cy + (spokes[i][1] - cy) * t * jit
         ]);
       }
-      // straight lines between ring points — real cobweb geometry
+      // close ring back to first point
+      pts.push([pts[0][0], pts[0][1]]);
+
       for (var i = 0; i < pts.length - 1; i++) {
-        var op  = (0.18 + (1 - t) * 0.5).toFixed(2);
-        var sw  = r <= 2 ? 0.8 : 0.5;
+        var op = (0.15 + (1 - t) * 0.55).toFixed(2);
+        var sw = r <= 3 ? 0.8 : 0.45;
         webLines += '<line x1="'+pts[i][0].toFixed(1)+'" y1="'+pts[i][1].toFixed(1)+'"'
                  + ' x2="'+pts[i+1][0].toFixed(1)+'" y2="'+pts[i+1][1].toFixed(1)+'"'
-                 + ' stroke="rgba(210,200,175,'+op+')" stroke-width="'+sw+'"/>';
+                 + ' stroke="rgba(215,205,180,'+op+')" stroke-width="'+sw+'"/>';
       }
-      // Dew drops on every 3rd ring at spoke intersections
-      if (r % 3 === 0) {
-        for (var i = 0; i < pts.length; i++) {
-          var dr  = (0.7 + Math.random() * 0.9).toFixed(1);
-          var dop = (0.35 + Math.random() * 0.3).toFixed(2);
+
+      // Dew drops on rings 3,5,8
+      if (r === 3 || r === 5 || r === 8) {
+        for (var i = 0; i < pts.length - 1; i++) {
+          var dr  = (0.6 + Math.random() * 0.8).toFixed(1);
+          var dop = (0.3 + Math.random() * 0.35).toFixed(2);
           webLines += '<circle cx="'+pts[i][0].toFixed(1)+'" cy="'+pts[i][1].toFixed(1)+'"'
-                   + ' r="'+dr+'" fill="rgba(210,228,255,'+dop+')"/>';
+                   + ' r="'+dr+'" fill="rgba(210,230,255,'+dop+')"/>';
         }
       }
     }
+
+    // Thread from web to egg sac (hangs from a spoke point near center)
+    webLines += '<line x1="'+(W2*0.82)+'" y1="'+(H2*0.04)+'" x2="'+(W2*0.84)+'" y2="'+(H2*0.28)+'"'
+             + ' stroke="rgba(200,185,155,0.7)" stroke-width="0.8"/>';
 
     webSvg.setAttribute('width',  W2);
     webSvg.setAttribute('height', H2);
@@ -463,7 +486,7 @@ components.html("""
 
     var arrow = doc.createElement('div'); arrow.id = 'egg-arrow';
     arrow.innerHTML = 'CLICK ME &#9658;';
-    doc.body.appendChild(arrow);
+    wrap.appendChild(arrow);
 
     sac.addEventListener('click', burstEgg);
   }
@@ -593,23 +616,37 @@ components.html("""
     var maxLife = 220 + Math.random() * 250;
     var rot = Math.random() * 360;
 
+    // Spider faces direction of travel, no spinning
+    var heading = Math.atan2(vy, vx) * (180/Math.PI);
+
     function move() {
       if (life >= maxLife) { el.remove(); return; }
       life++;
-      vx += (Math.random() - 0.5) * 0.8;
-      vy += (Math.random() - 0.5) * 0.8;
-      speed = Math.sqrt(vx*vx + vy*vy);
-      if (speed > 10) { vx *= 0.9; vy *= 0.9; }
+
+      // Small random steering — spiders change direction gradually not randomly
+      var steer = (Math.random() - 0.5) * 0.3;
+      var ang = Math.atan2(vy, vx) + steer;
+      var spd = Math.sqrt(vx*vx + vy*vy);
+      // Slight deceleration over time like a real spider slowing down
+      spd = Math.max(0.8, spd * 0.995);
+      vx = Math.cos(ang) * spd;
+      vy = Math.sin(ang) * spd;
+
       var x = parseFloat(el.style.left) + vx;
       var y = parseFloat(el.style.top)  + vy;
-      if (x < 0) { x = 0; vx *= -1; }
-      if (x > W) { x = W; vx *= -1; }
-      if (y < 0) { y = 0; vy *= -1; }
-      if (y > H) { y = H; vy *= -1; }
-      rot += 5;
+
+      // Bounce off edges
+      if (x < 0)  { x = 0;  vx *= -1; ang = Math.atan2(vy, vx); }
+      if (x > W)  { x = W;  vx *= -1; ang = Math.atan2(vy, vx); }
+      if (y < 0)  { y = 0;  vy *= -1; ang = Math.atan2(vy, vx); }
+      if (y > H)  { y = H;  vy *= -1; ang = Math.atan2(vy, vx); }
+
+      // Rotate to face direction of travel only
+      heading = ang * (180/Math.PI);
+
       el.style.left = x + 'px';
       el.style.top  = y + 'px';
-      el.style.transform = 'rotate(' + rot + 'deg)';
+      el.style.transform = 'rotate(' + heading + 'deg)';
       el.style.opacity = Math.max(0, 1 - (life / maxLife));
       requestAnimationFrame(move);
     }
