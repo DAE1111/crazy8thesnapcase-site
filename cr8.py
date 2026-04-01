@@ -1012,10 +1012,15 @@ components.html(f"""
 # ---- Logo at 50% opacity, 60% bigger, perfectly centered ----
 if cr8_logo:
     st.markdown(
-        f'<div style="display:flex;justify-content:center;align-items:center;width:100%;margin:0 auto;">'
-        f'<img src="data:image/png;base64,{cr8_logo}" '
-        f'style="width:784px;max-width:90%;opacity:0.50;display:block;">'
-        f'</div>',
+        f'''<style>
+        .cr8logo {{ width:784px; max-width:90%; opacity:0.50; display:block; }}
+        @media (max-width:768px) {{
+          .cr8logo {{ width:100% !important; max-width:100% !important; }}
+        }}
+        </style>
+        <div style="display:flex;justify-content:center;align-items:center;width:100%;margin:0 auto;">
+        <img src="data:image/png;base64,{cr8_logo}" class="cr8logo">
+        </div>''',
         unsafe_allow_html=True
     )
 elif ARTIST_NAME:
