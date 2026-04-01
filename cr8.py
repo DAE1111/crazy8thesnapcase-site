@@ -77,14 +77,9 @@ SINGLES = [
     {"title": "MR. HEAD BUSSA",                             "year": 2023, "url": "https://open.spotify.com/album/6hJInkHw6JYSecAqO4jX5V"},
 ]
 
-
-
-
 # ============================================================
 #  APP — Nothing below this line needs to be edited
 # ============================================================
-
-
 
 # Assets load from same folder as cr8.py — works locally and on any server
 def load_asset(filename):
@@ -121,18 +116,6 @@ st.set_page_config(page_title=ARTIST_NAME or "Artist Site", page_icon=PAGE_ICON,
 st.markdown(f"""
 <style>
     {font_face_css}
-
-    /* ── Hide all script-only iframes ── */
-    iframe[height="1"] {{
-        display: none !important;
-        position: absolute !important;
-        width: 0 !important;
-        height: 0 !important;
-        border: none !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-    }}
-
     .stApp {{
         background-image: {bg_css};
         background-size: 100% 100%;
@@ -172,11 +155,6 @@ st.markdown(f"""
     }}
     hr {{ border-color: {TEXT_COLOR}; }}
     img {{ display: block; margin: auto; }}
-    div[data-testid="stMarkdownContainer"] {{
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-    }}
     * {{ cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpolygon points='2,2 2,20 8,14 12,22 15,21 11,13 20,13' fill='%2313D842' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 2 2, auto !important; }}
     .disc-link {{ text-align: center; }}
     .disc-link a {{
@@ -356,6 +334,7 @@ components.html("""
     var s5 = doc.createElement('div'); s5.id = 'egg-silk-5';
     sac.appendChild(s1); sac.appendChild(s2); sac.appendChild(s3); sac.appendChild(s4); sac.appendChild(s5);
 
+    // Canvas for wriggling babies inside sac
     var eggCanvas = doc.createElement('canvas');
     eggCanvas.id = 'egg-canvas';
     eggCanvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border-radius:45% 45% 52% 52%;pointer-events:none;z-index:2;opacity:0.75;';
@@ -365,6 +344,7 @@ components.html("""
     wrap.appendChild(sac);
     doc.body.appendChild(wrap);
 
+    // Animate babies inside
     var babies = [];
     for (var b = 0; b < 18; b++) {
       babies.push({
@@ -395,6 +375,7 @@ components.html("""
         cx.arc(px, py, pr, 0, Math.PI*2);
         cx.fillStyle = b.color;
         cx.fill();
+        // tiny legs
         for (var l = 0; l < 4; l++) {
           var la = (l/4)*Math.PI*2;
           cx.beginPath();
@@ -409,15 +390,18 @@ components.html("""
     }
     animateBabies();
 
+    // Spider web in top right corner
     var webSvg = doc.createElementNS('http://www.w3.org/2000/svg','svg');
     webSvg.id = 'egg-web';
     webSvg.setAttribute('width','240');
     webSvg.setAttribute('height','240');
     webSvg.style.cssText = 'position:fixed;top:0;right:0;z-index:2147483644;pointer-events:none;opacity:0.55;';
+    // Proper corner cobweb — sac hangs inside it
     var W2 = 260; var H2 = 260;
-    var cx = W2; var cy = 0;
+    var cx = W2; var cy = 0; // top-right corner origin
     var webLines = '';
 
+    // 12 spokes fanning from corner covering top edge and right side
     var numSpokes = 12;
     var numRings  = 10;
     var maxR      = 248;
@@ -430,22 +414,26 @@ components.html("""
       ]);
     }
 
+    // Anchor threads from corner edges (top bar and right edge)
+    // Extra threads connecting sac area to the web
     var anchors = [
-      [W2, 0, 0, 0],
-      [W2, 0, W2, H2],
-      [W2, 0, W2*0.55, 0],
-      [W2, 0, W2, H2*0.55],
+      [W2, 0, 0, 0],         // corner to top-left of svg
+      [W2, 0, W2, H2],       // corner straight down
+      [W2, 0, W2*0.55, 0],   // along top edge
+      [W2, 0, W2, H2*0.55],  // along right edge
     ];
     anchors.forEach(function(a) {
       webLines += '<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+a[2]+'" y2="'+a[3]+'"'
                + ' stroke="rgba(215,205,180,0.85)" stroke-width="1.1"/>';
     });
 
+    // Main spokes
     for (var i = 0; i < spokes.length; i++) {
       webLines += '<line x1="'+cx+'" y1="'+cy+'" x2="'+spokes[i][0].toFixed(1)+'" y2="'+spokes[i][1].toFixed(1)+'"'
                + ' stroke="rgba(215,205,180,0.78)" stroke-width="0.85"/>';
     }
 
+    // Concentric rings — straight lines between spoke points
     for (var r = 1; r <= numRings; r++) {
       var t   = r / numRings;
       var pts = [];
@@ -456,6 +444,7 @@ components.html("""
           cy + (spokes[i][1] - cy) * t * jit
         ]);
       }
+      // close ring back to first point
       pts.push([pts[0][0], pts[0][1]]);
 
       for (var i = 0; i < pts.length - 1; i++) {
@@ -466,6 +455,7 @@ components.html("""
                  + ' stroke="rgba(215,205,180,'+op+')" stroke-width="'+sw+'"/>';
       }
 
+      // Dew drops on rings 3,5,8
       if (r === 3 || r === 5 || r === 8) {
         for (var i = 0; i < pts.length - 1; i++) {
           var dr  = (0.6 + Math.random() * 0.8).toFixed(1);
@@ -476,6 +466,7 @@ components.html("""
       }
     }
 
+    // Thread from web to egg sac (hangs from a spoke point near center)
     webLines += '<line x1="'+(W2*0.82)+'" y1="'+(H2*0.04)+'" x2="'+(W2*0.84)+'" y2="'+(H2*0.28)+'"'
              + ' stroke="rgba(200,185,155,0.7)" stroke-width="0.8"/>';
 
@@ -533,7 +524,7 @@ components.html("""
     if (arrow) arrow.style.display  = 'block';
   }
 
-  // ── Spider leg animation CSS injected inline — no separate iframe needed ──
+  // Inject spider leg animation CSS once
   if (!doc.getElementById('spider-leg-anim')) {
     var legCSS = doc.createElement('style');
     legCSS.id = 'spider-leg-anim';
@@ -571,12 +562,28 @@ components.html("""
     var uid = 'sp' + Math.floor(Math.random()*99999);
     var svg = '<svg width=\"'+(vs*2)+'\" height=\"'+(vs*2)+'\" viewBox=\"'+(-vs)+' '+(-vs)+' '+(vs*2)+' '+(vs*2)+'\" xmlns=\"http://www.w3.org/2000/svg\">';
 
+    // Legs defined as groups with rotation origin at attachment point
+    // 4 legs per side, alternating gait classes
+    var legDefs = [
+      // [side, baseAng, class, sx, sy]
+      [-1, -1.35, 'lg-a'],
+      [-1, -0.85, 'lg-b'],
+      [-1, -0.35, 'lg-c'],
+      [-1,  0.15, 'lg-d'],
+      [ 1,  Math.PI+0.15-Math.PI, 'lg-b'],
+      [ 1,  Math.PI+0.35-Math.PI, 'lg-a'],
+      [ 1,  Math.PI+0.85-Math.PI, 'lg-d'],
+      [ 1,  Math.PI+1.35-Math.PI, 'lg-c'],
+    ];
+
+    // Right side legs
     var rLegs = [
       {ang: Math.PI*0.08, cls:'lg-a'},
       {ang: Math.PI*0.18, cls:'lg-b'},
       {ang: Math.PI*0.30, cls:'lg-c'},
       {ang: Math.PI*0.42, cls:'lg-d'},
     ];
+    // Left side legs (mirror)
     var lLegs = [
       {ang: Math.PI*0.92, cls:'lg-b'},
       {ang: Math.PI*0.82, cls:'lg-a'},
@@ -608,13 +615,16 @@ components.html("""
     rLegs.forEach(function(l) { svg += drawLeg(l.ang, l.cls, true);  });
     lLegs.forEach(function(l) { svg += drawLeg(l.ang, l.cls, false); });
 
+    // Abdomen
     svg += '<ellipse cx=\"0\" cy=\"'+(size*1.2)+'\" rx=\"'+(size*1.5)+'\" ry=\"'+(size*2.0)+'\" fill=\"'+color+'\"/>';
     svg += '<ellipse cx=\"'+(size*-0.35)+'\" cy=\"'+(size*0.5)+'\" rx=\"'+(size*0.4)+'\" ry=\"'+(size*0.28)+'\" fill=\"rgba(255,255,255,0.1)\"/>';
     svg += '<ellipse cx=\"0\" cy=\"'+(size*1.0)+'\" rx=\"'+(size*0.45)+'\" ry=\"'+(size*0.22)+'\" fill=\"rgba(255,140,0,0.22)\"/>';
     svg += '<ellipse cx=\"0\" cy=\"'+(size*1.7)+'\" rx=\"'+(size*0.35)+'\" ry=\"'+(size*0.18)+'\" fill=\"rgba(255,140,0,0.16)\"/>';
 
+    // Cephalothorax
     svg += '<ellipse cx=\"0\" cy=\"'+(size*-0.35)+'\" rx=\"'+(size*1.05)+'\" ry=\"'+(size*0.85)+'\" fill=\"'+color+'\"/>';
 
+    // 8 eyes
     var er = size*0.16;
     var eyes = [
       [-size*0.5,-size*0.65],[-size*0.18,-size*0.78],[size*0.18,-size*0.78],[size*0.5,-size*0.65],
@@ -625,6 +635,7 @@ components.html("""
       svg += '<circle cx=\"'+ep[0].toFixed(1)+'\" cy=\"'+ep[1].toFixed(1)+'\" r=\"'+er.toFixed(1)+'\" fill=\"'+ecols[ei]+'\" opacity=\"0.9\"/>';
     });
 
+    // Pedipalps
     svg += '<line x1=\"'+(size*-0.45)+'\" y1=\"'+(size*-0.65)+'\" x2=\"'+(size*-1.1)+'\" y2=\"'+(size*-1.2)+'\" stroke=\"'+color+'\" stroke-width=\"'+(size*0.22).toFixed(1)+'\" stroke-linecap=\"round\"/>';
     svg += '<line x1=\"'+(size*0.45)+'\" y1=\"'+(size*-0.65)+'\" x2=\"'+(size*1.1)+'\" y2=\"'+(size*-1.2)+'\" stroke=\"'+color+'\" stroke-width=\"'+(size*0.22).toFixed(1)+'\" stroke-linecap=\"round\"/>';
 
@@ -650,20 +661,29 @@ components.html("""
     var vy = Math.sin(angle) * speed;
     var life = 0;
     var maxLife = 220 + Math.random() * 250;
+    var rot = Math.random() * 360;
 
+    // No rotation at all — spiders just translate across screen naturally
     function move() {
       if (life >= maxLife) { el.remove(); return; }
       life++;
+
+      // Gentle random steering like a real spider scurrying
       vx += (Math.random() - 0.5) * 0.15;
       vy += (Math.random() - 0.5) * 0.15;
+
+      // Cap speed
       var spd = Math.sqrt(vx*vx + vy*vy);
       if (spd > 8) { vx = (vx/spd)*8; vy = (vy/spd)*8; }
+
       var x = parseFloat(el.style.left) + vx;
       var y = parseFloat(el.style.top)  + vy;
+
       if (x < 0)  { x = 0;  vx = Math.abs(vx); }
       if (x > W)  { x = W;  vx = -Math.abs(vx); }
       if (y < 0)  { y = 0;  vy = Math.abs(vy); }
       if (y > H)  { y = H;  vy = -Math.abs(vy); }
+
       el.style.left = x + 'px';
       el.style.top  = y + 'px';
       el.style.opacity = Math.max(0, 1 - (life / maxLife));
@@ -673,7 +693,8 @@ components.html("""
   }
 })();
 </script>
-""", height=1, scrolling=False)
+""", height=0)
+
 
 # ---- TV Loading Screen ----
 st.markdown(f"""
@@ -771,6 +792,7 @@ st.markdown(f"""
   margin-top:1vh;
 }}
 
+/* Mobile — lock TV to 4:3 aspect ratio, center it, black bars fill rest */
 @media (max-width:768px) {{
   #cr8-wrap {{
     background:#000 !important;
@@ -940,6 +962,7 @@ components.html(f"""
           d[idx+3] = 255;
         }}
       }}
+      // tape band dropout
       if (Math.random() < 0.04) {{
         var by = (Math.random() * h)|0;
         var bh = 1 + (Math.random() * 2)|0;
@@ -959,6 +982,7 @@ components.html(f"""
   }}
   drawStatic();
 
+  // Layer 5 copies of the static sound
   var staticEl  = new Audio("data:audio/mp3;base64,{audio_static}");
   var staticEl2 = new Audio("data:audio/mp3;base64,{audio_static}");
   var staticEl3 = new Audio("data:audio/mp3;base64,{audio_static}");
@@ -970,6 +994,7 @@ components.html(f"""
   musicSnd.loop   = false;
   musicSnd.volume = 0.36;
 
+  // Page Visibility API — pause music when tab is hidden, resume when back
   doc.addEventListener('visibilitychange', function() {{
     if (doc.hidden) {{
       if (!musicSnd.paused) musicSnd.pause();
@@ -978,6 +1003,7 @@ components.html(f"""
     }}
   }});
 
+  // Knob twist on click
   var knobAngles = {{'knob-big': 0, 'knob-small': 0}};
   ['knob-big', 'knob-small'].forEach(function(id) {{
     var knob = doc.getElementById(id);
@@ -985,8 +1011,8 @@ components.html(f"""
     knob.addEventListener('click', function() {{
       knobAngles[id] = (knobAngles[id] + 45) % 360;
       knob.style.transform = 'rotate(' + knobAngles[id] + 'deg)';
-      var s = new Audio("data:audio/mp3;base64,{audio_click}");
-      s.volume = 0.5; s.play().catch(function(){{}});
+      var s = staticEl.cloneNode ? new Audio("data:audio/mp3;base64,{audio_click}") : null;
+      if (s) {{ s.volume = 0.5; s.play().catch(function(){{}}); }}
     }});
   }});
 
@@ -994,6 +1020,7 @@ components.html(f"""
   var txt     = doc.getElementById('cr8-txt');
   var btn     = doc.getElementById('cr8-btn');
 
+  // Single click — play static, show loading, start 7s timer
   if (playBtn) {{
     playBtn.onclick = function() {{
       [staticEl, staticEl2, staticEl3, staticEl4, staticEl5].forEach(function(s) {{
@@ -1028,9 +1055,10 @@ components.html(f"""
   }}
 }})();
 </script>
-""", height=1, scrolling=False)
+""", height=0)
 
-# ---- Logo ----
+
+# ---- Logo at 50% opacity, 60% bigger, perfectly centered ----
 if cr8_logo:
     st.markdown(
         f'''<style>
@@ -1038,21 +1066,15 @@ if cr8_logo:
         @media (max-width:768px) {{
           .cr8logo {{ width:100% !important; max-width:100% !important; }}
         }}
-        div[data-testid="stMarkdownContainer"]:has(.cr8logo) {{
-          background: transparent !important;
-          border: none !important;
-          box-shadow: none !important;
-          padding: 0 !important;
-          margin: 0 !important;
-        }}
         </style>
-        <div style="display:flex;justify-content:center;align-items:center;width:100%;margin:0 auto;background:transparent;">
+        <div style="display:flex;justify-content:center;align-items:center;width:100%;margin:0 auto;">
         <img src="data:image/png;base64,{cr8_logo}" class="cr8logo">
         </div>''',
         unsafe_allow_html=True
     )
 elif ARTIST_NAME:
     st.markdown(f'<div style="text-align:center;"><h1>{ARTIST_NAME}</h1></div>', unsafe_allow_html=True)
+
 
 if TAGLINE:
     st.subheader(TAGLINE)
@@ -1071,6 +1093,7 @@ components.html(f"""
   var clickSnd = new Audio("data:audio/mp3;base64,{audio_click}");
   clickSnd.volume = 0.49;
 
+  // Inject CSS once
   if (!doc.getElementById('cr8-glitch-style')) {{
     var st = doc.createElement('style');
     st.id = 'cr8-glitch-style';
@@ -1178,7 +1201,14 @@ components.html(f"""
   }}
 }})();
 </script>
-""", height=1, scrolling=False)
+""", height=0)
+
+
+
+
+
+
+
 
 
 # ---- Skull divider helper ----
