@@ -397,45 +397,77 @@ components.html("""
     // Spider web in top right corner
     var webSvg = doc.createElementNS('http://www.w3.org/2000/svg','svg');
     webSvg.id = 'egg-web';
-    webSvg.setAttribute('width','180');
-    webSvg.setAttribute('height','180');
+    webSvg.setAttribute('width','220');
+    webSvg.setAttribute('height','220');
     webSvg.style.cssText = 'position:fixed;top:0;right:0;z-index:2147483644;pointer-events:none;opacity:0.55;';
-    webSvg.innerHTML = `
-      <defs>
-        <style>
-          .wl { stroke:rgba(210,200,180,0.7); stroke-width:0.8; fill:none; }
-          .wl2 { stroke:rgba(210,200,180,0.4); stroke-width:0.5; fill:none; }
-        </style>
-      </defs>
-      <!-- Radial spokes from top-right corner (180,0) -->
-      <line class="wl" x1="180" y1="0" x2="0"   y2="0"  />
-      <line class="wl" x1="180" y1="0" x2="20"  y2="40" />
-      <line class="wl" x1="180" y1="0" x2="50"  y2="90" />
-      <line class="wl" x1="180" y1="0" x2="90"  y2="140"/>
-      <line class="wl" x1="180" y1="0" x2="130" y2="175"/>
-      <line class="wl" x1="180" y1="0" x2="180" y2="180"/>
-      <line class="wl" x1="180" y1="0" x2="155" y2="60" />
-      <line class="wl" x1="180" y1="0" x2="170" y2="110"/>
+    // Generate realistic web programmatically
+    var W2 = 220; var H2 = 220;
+    var ox = W2; var oy = 0; // corner origin
+    // Spoke angles fanning from top-right corner inward
+    var spokeAngles = [
+      Math.PI,           // straight left
+      Math.PI + 0.18,
+      Math.PI + 0.38,
+      Math.PI + 0.60,
+      Math.PI + 0.82,
+      Math.PI + 1.05,
+      Math.PI + 1.28,
+      Math.PI + 1.52,
+      Math.PI*1.5        // straight down
+    ];
+    var spokeLen = [W2*0.98, W2*0.94, W2*0.96, W2*0.92, W2*0.90, W2*0.88, W2*0.91, W2*0.93, H2*0.98];
+    var numRings = 9;
+    var webLines = '';
 
-      <!-- Concentric web rings -->
-      <path class="wl2" d="M155,0 Q140,8 130,20 Q110,38 95,55 Q75,72 55,82 Q35,90 18,88 Q5,85 0,75"/>
-      <path class="wl2" d="M130,0 Q112,12 98,28 Q78,50 60,70 Q42,88 24,98 Q10,105 0,100"/>
-      <path class="wl2" d="M100,0 Q84,14 70,32 Q52,54 36,74 Q20,92 6,105 Q0,110 0,115"/>
-      <path class="wl2" d="M70,0  Q56,14 44,30 Q28,52 16,72 Q6,90 0,105"/>
-      <path class="wl2" d="M40,0  Q28,12 18,26 Q8,44 2,62 Q0,70 0,78"/>
-      <path class="wl2" d="M15,0  Q10,8 6,18 Q2,30 0,42"/>
+    // Draw spokes
+    for (var sp = 0; sp < spokeAngles.length; sp++) {
+      var ex = ox + Math.cos(spokeAngles[sp]) * spokeLen[sp];
+      var ey = oy + Math.sin(spokeAngles[sp]) * spokeLen[sp];
+      var sw = sp === 0 || sp === spokeAngles.length-1 ? 0.9 : 0.7;
+      webLines += '<line x1="'+ox+'" y1="'+oy+'" x2="'+ex.toFixed(1)+'" y2="'+ey.toFixed(1)+'" stroke="rgba(215,205,185,0.75)" stroke-width="'+sw+'"/>';
+    }
 
-      <!-- Dew drop dots on web -->
-      <circle cx="130" cy="20" r="1.5" fill="rgba(200,220,255,0.6)"/>
-      <circle cx="95"  cy="55" r="1.2" fill="rgba(200,220,255,0.5)"/>
-      <circle cx="60"  cy="70" r="1.4" fill="rgba(200,220,255,0.6)"/>
-      <circle cx="55"  cy="82" r="1.0" fill="rgba(200,220,255,0.4)"/>
-      <circle cx="98"  cy="28" r="1.2" fill="rgba(200,220,255,0.5)"/>
-      <circle cx="36"  cy="74" r="1.1" fill="rgba(200,220,255,0.5)"/>
-      <circle cx="155" cy="60" r="1.3" fill="rgba(200,220,255,0.4)"/>
-      <circle cx="170" cy="110"r="1.2" fill="rgba(200,220,255,0.4)"/>
-      <circle cx="18"  cy="88" r="1.0" fill="rgba(200,220,255,0.4)"/>
-    `;
+    // Draw concentric spiral rings connecting spoke points
+    for (var ring = 1; ring <= numRings; ring++) {
+      var t = ring / numRings;
+      var pts = [];
+      for (var sp2 = 0; sp2 < spokeAngles.length; sp2++) {
+        // Vary radii slightly per ring for organic look
+        var jitter = 1 + (Math.sin(sp2 * 2.3 + ring) * 0.04);
+        var r = spokeLen[sp2] * t * jitter;
+        pts.push([
+          ox + Math.cos(spokeAngles[sp2]) * r,
+          oy + Math.sin(spokeAngles[sp2]) * r
+        ]);
+      }
+      // Build path through spoke points with slight curves
+      var d = 'M '+pts[0][0].toFixed(1)+' '+pts[0][1].toFixed(1);
+      for (var p = 1; p < pts.length; p++) {
+        var prev = pts[p-1];
+        var curr = pts[p];
+        var mx = (prev[0]+curr[0])/2 + (Math.random()-0.5)*4;
+        var my = (prev[1]+curr[1])/2 + (Math.random()-0.5)*4;
+        d += ' Q'+mx.toFixed(1)+','+my.toFixed(1)+' '+curr[0].toFixed(1)+','+curr[1].toFixed(1);
+      }
+      var ringOp = 0.25 + (1-t)*0.35;
+      var ringW  = ring <= 2 ? 0.9 : 0.55;
+      webLines += '<path d="'+d+'" stroke="rgba(215,205,185,'+ringOp.toFixed(2)+')" stroke-width="'+ringW+'" fill="none"/>';
+
+      // Dew drops at spoke intersections every other ring
+      if (ring % 2 === 0) {
+        for (var sp3 = 0; sp3 < spokeAngles.length; sp3++) {
+          var dx = ox + Math.cos(spokeAngles[sp3]) * spokeLen[sp3] * t;
+          var dy = oy + Math.sin(spokeAngles[sp3]) * spokeLen[sp3] * t;
+          var dr = 0.8 + Math.random() * 0.8;
+          var dop = (0.4 + Math.random()*0.3).toFixed(2);
+          webLines += '<circle cx="'+dx.toFixed(1)+'" cy="'+dy.toFixed(1)+'" r="'+dr.toFixed(1)+'" fill="rgba(210,230,255,'+dop+')" />';
+        }
+      }
+    }
+
+    webSvg.setAttribute('width', W2);
+    webSvg.setAttribute('height', H2);
+    webSvg.innerHTML = webLines;
     doc.body.appendChild(webSvg);
 
     var arrow = doc.createElement('div'); arrow.id = 'egg-arrow';
