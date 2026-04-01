@@ -172,6 +172,11 @@ st.markdown(f"""
     }}
     hr {{ border-color: {TEXT_COLOR}; }}
     img {{ display: block; margin: auto; }}
+    div[data-testid="stMarkdownContainer"] {{
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }}
     * {{ cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpolygon points='2,2 2,20 8,14 12,22 15,21 11,13 20,13' fill='%2313D842' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 2 2, auto !important; }}
     .disc-link {{ text-align: center; }}
     .disc-link a {{
@@ -1033,8 +1038,15 @@ if cr8_logo:
         @media (max-width:768px) {{
           .cr8logo {{ width:100% !important; max-width:100% !important; }}
         }}
+        div[data-testid="stMarkdownContainer"]:has(.cr8logo) {{
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }}
         </style>
-        <div style="display:flex;justify-content:center;align-items:center;width:100%;margin:0 auto;">
+        <div style="display:flex;justify-content:center;align-items:center;width:100%;margin:0 auto;background:transparent;">
         <img src="data:image/png;base64,{cr8_logo}" class="cr8logo">
         </div>''',
         unsafe_allow_html=True
