@@ -533,64 +533,120 @@ components.html("""
     if (arrow) arrow.style.display  = 'block';
   }
 
+  // Inject spider leg animation CSS once
+  if (!doc.getElementById('spider-leg-anim')) {
+    var legCSS = doc.createElement('style');
+    legCSS.id = 'spider-leg-anim';
+    legCSS.textContent = `
+      @keyframes legA {
+        0%,100% { transform: rotate(0deg); }
+        25%      { transform: rotate(18deg); }
+        75%      { transform: rotate(-18deg); }
+      }
+      @keyframes legB {
+        0%,100% { transform: rotate(0deg); }
+        25%      { transform: rotate(-18deg); }
+        75%      { transform: rotate(18deg); }
+      }
+      @keyframes legC {
+        0%,100% { transform: rotate(0deg); }
+        33%      { transform: rotate(22deg); }
+        66%      { transform: rotate(-22deg); }
+      }
+      @keyframes legD {
+        0%,100% { transform: rotate(0deg); }
+        33%      { transform: rotate(-22deg); }
+        66%      { transform: rotate(22deg); }
+      }
+      .lg-a { animation: legA 0.22s ease-in-out infinite; transform-origin: 0px 0px; }
+      .lg-b { animation: legB 0.22s ease-in-out infinite; transform-origin: 0px 0px; }
+      .lg-c { animation: legC 0.22s ease-in-out infinite; transform-origin: 0px 0px; }
+      .lg-d { animation: legD 0.22s ease-in-out infinite; transform-origin: 0px 0px; }
+    `;
+    doc.head.appendChild(legCSS);
+  }
+
   function drawSpiderSVG(size, color) {
-    var vs = size * 5;
-    var svg = '<svg width=\"' + (vs*2) + '\" height=\"' + (vs*2) + '\" viewBox=\"' + (-vs) + ' ' + (-vs) + ' ' + (vs*2) + ' ' + (vs*2) + '\" xmlns=\"http://www.w3.org/2000/svg\">';
+    var vs = size * 6;
+    var uid = 'sp' + Math.floor(Math.random()*99999);
+    var svg = '<svg width=\"'+(vs*2)+'\" height=\"'+(vs*2)+'\" viewBox=\"'+(-vs)+' '+(-vs)+' '+(vs*2)+' '+(vs*2)+'\" xmlns=\"http://www.w3.org/2000/svg\">';
 
-    // 8 legs, 3 segments each, spread realistically
-    var legAngles = [-1.4, -0.9, -0.4, 0.1, Math.PI-0.1, Math.PI+0.4, Math.PI+0.9, Math.PI+1.4];
-    var legSide   = [-1,-1,-1,-1,1,1,1,1];
-    for (var i = 0; i < 8; i++) {
-      var base = legAngles[i];
-      var sx = legSide[i] * size * 0.7;
-      var sy = (i < 4 ? -1 : 1) * size * 0.1;
-      // seg 1
-      var x1 = sx + Math.cos(base) * size * 2.2;
-      var y1 = sy + Math.sin(base) * size * 1.2;
-      // seg 2 — curves outward
-      var a2 = base + (legSide[i] > 0 ? 0.5 : -0.5);
-      var x2 = x1 + Math.cos(a2) * size * 2.0;
-      var y2 = y1 + Math.sin(a2) * size * 1.4;
-      // seg 3 — curls back down like real spider
-      var a3 = a2 + (legSide[i] > 0 ? 0.7 : -0.7);
-      var x3 = x2 + Math.cos(a3) * size * 1.6;
-      var y3 = y2 + Math.sin(a3) * size * 1.8;
-      var lw = (size * 0.5).toFixed(1);
-      var lw2 = (size * 0.35).toFixed(1);
-      var lw3 = (size * 0.2).toFixed(1);
-      svg += '<line x1=\"'+sx+'\" y1=\"'+sy+'\" x2=\"'+x1+'\" y2=\"'+y1+'\" stroke=\"'+color+'\" stroke-width=\"'+lw+'\" stroke-linecap=\"round\"/>';
-      svg += '<line x1=\"'+x1+'\" y1=\"'+y1+'\" x2=\"'+x2+'\" y2=\"'+y2+'\" stroke=\"'+color+'\" stroke-width=\"'+lw2+'\" stroke-linecap=\"round\"/>';
-      svg += '<line x1=\"'+x2+'\" y1=\"'+y2+'\" x2=\"'+x3+'\" y2=\"'+y3+'\" stroke=\"'+color+'\" stroke-width=\"'+lw3+'\" stroke-linecap=\"round\"/>';
-    }
-
-    // Abdomen — large teardrop with markings
-    var aw = size * 1.6; var ah = size * 2.2;
-    svg += '<ellipse cx=\"0\" cy=\"'+(size*1.2)+'\" rx=\"'+aw+'\" ry=\"'+ah+'\" fill=\"'+color+'\"/>';
-    // Abdomen highlight
-    svg += '<ellipse cx=\"'+(size*-0.4)+'\" cy=\"'+(size*0.5)+'\" rx=\"'+(size*0.5)+'\" ry=\"'+(size*0.35)+'\" fill=\"rgba(255,255,255,0.12)\" transform=\"rotate(-20,0,'+size*1.2+')\" />';
-    // Abdomen stripe markings
-    svg += '<ellipse cx=\"0\" cy=\"'+(size*1.1)+'\" rx=\"'+(size*0.5)+'\" ry=\"'+(size*0.25)+'\" fill=\"rgba(255,165,0,0.25)\"/>';
-    svg += '<ellipse cx=\"0\" cy=\"'+(size*1.8)+'\" rx=\"'+(size*0.4)+'\" ry=\"'+(size*0.2)+'\" fill=\"rgba(255,165,0,0.18)\"/>';
-
-    // Cephalothorax — oval head/body
-    var cw = size * 1.1; var ch = size * 0.9;
-    svg += '<ellipse cx=\"0\" cy=\"'+(size*-0.4)+'\" rx=\"'+cw+'\" ry=\"'+ch+'\" fill=\"'+color+'\"/>';
-    svg += '<ellipse cx=\"'+(size*-0.3)+'\" cy=\"'+(size*-0.65)+'\" rx=\"'+(size*0.35)+'\" ry=\"'+(size*0.22)+'\" fill=\"rgba(255,255,255,0.1)\" transform=\"rotate(-15)\"/>';
-
-    // 8 eyes in two rows
-    var eyeR = size * 0.18;
-    var eyePositions = [
-      [-size*0.55, -size*0.7], [-size*0.2, -size*0.82], [size*0.2, -size*0.82], [size*0.55, -size*0.7],
-      [-size*0.35, -size*0.52], [-size*0.1, -size*0.58], [size*0.1, -size*0.58], [size*0.35, -size*0.52]
+    // Legs defined as groups with rotation origin at attachment point
+    // 4 legs per side, alternating gait classes
+    var legDefs = [
+      // [side, baseAng, class, sx, sy]
+      [-1, -1.35, 'lg-a'],
+      [-1, -0.85, 'lg-b'],
+      [-1, -0.35, 'lg-c'],
+      [-1,  0.15, 'lg-d'],
+      [ 1,  Math.PI+0.15-Math.PI, 'lg-b'],
+      [ 1,  Math.PI+0.35-Math.PI, 'lg-a'],
+      [ 1,  Math.PI+0.85-Math.PI, 'lg-d'],
+      [ 1,  Math.PI+1.35-Math.PI, 'lg-c'],
     ];
-    var eyeColors = ['#ff0000','#ff4400','#ff0000','#ff0000','#ffffff','#ffffff','#ffffff','#ffffff'];
-    for (var e = 0; e < eyePositions.length; e++) {
-      svg += '<circle cx=\"'+eyePositions[e][0]+'\" cy=\"'+eyePositions[e][1]+'\" r=\"'+eyeR+'\" fill=\"'+eyeColors[e]+'\" opacity=\"0.9\"/>';
+
+    // Right side legs
+    var rLegs = [
+      {ang: Math.PI*0.08, cls:'lg-a'},
+      {ang: Math.PI*0.18, cls:'lg-b'},
+      {ang: Math.PI*0.30, cls:'lg-c'},
+      {ang: Math.PI*0.42, cls:'lg-d'},
+    ];
+    // Left side legs (mirror)
+    var lLegs = [
+      {ang: Math.PI*0.92, cls:'lg-b'},
+      {ang: Math.PI*0.82, cls:'lg-a'},
+      {ang: Math.PI*0.70, cls:'lg-d'},
+      {ang: Math.PI*0.58, cls:'lg-c'},
+    ];
+
+    function drawLeg(ang, cls, flip) {
+      var sx = Math.cos(ang) * size * 0.8;
+      var sy = Math.sin(ang) * size * 0.3;
+      var x1 = sx + Math.cos(ang) * size * 2.4;
+      var y1 = sy + Math.sin(ang) * size * 1.3;
+      var a2 = ang + (flip ? 0.55 : -0.55);
+      var x2 = x1 + Math.cos(a2) * size * 2.0;
+      var y2 = y1 + Math.sin(a2) * size * 1.2;
+      var a3 = a2 + (flip ? 0.6 : -0.6);
+      var x3 = x2 + Math.cos(a3) * size * 1.4;
+      var y3 = y2 + Math.sin(a3) * size * 1.6;
+      var lw  = (size*0.45).toFixed(1);
+      var lw2 = (size*0.30).toFixed(1);
+      var lw3 = (size*0.18).toFixed(1);
+      return '<g class=\"'+cls+'\" style=\"transform-origin:'+sx.toFixed(1)+'px '+sy.toFixed(1)+'px;\">'
+        + '<line x1=\"'+sx.toFixed(1)+'\" y1=\"'+sy.toFixed(1)+'\" x2=\"'+x1.toFixed(1)+'\" y2=\"'+y1.toFixed(1)+'\" stroke=\"'+color+'\" stroke-width=\"'+lw+'\" stroke-linecap=\"round\"/>'
+        + '<line x1=\"'+x1.toFixed(1)+'\" y1=\"'+y1.toFixed(1)+'\" x2=\"'+x2.toFixed(1)+'\" y2=\"'+y2.toFixed(1)+'\" stroke=\"'+color+'\" stroke-width=\"'+lw2+'\" stroke-linecap=\"round\"/>'
+        + '<line x1=\"'+x2.toFixed(1)+'\" y1=\"'+y2.toFixed(1)+'\" x2=\"'+x3.toFixed(1)+'\" y2=\"'+y3.toFixed(1)+'\" stroke=\"'+color+'\" stroke-width=\"'+lw3+'\" stroke-linecap=\"round\"/>'
+        + '</g>';
     }
 
-    // Pedipalps (small front appendages)
-    svg += '<line x1=\"'+(size*-0.5)+'\" y1=\"'+(size*-0.7)+'\" x2=\"'+(size*-1.2)+'\" y2=\"'+(size*-1.3)+'\" stroke=\"'+color+'\" stroke-width=\"'+(size*0.25)+'\" stroke-linecap=\"round\"/>';
-    svg += '<line x1=\"'+(size*0.5)+'\" y1=\"'+(size*-0.7)+'\" x2=\"'+(size*1.2)+'\" y2=\"'+(size*-1.3)+'\" stroke=\"'+color+'\" stroke-width=\"'+(size*0.25)+'\" stroke-linecap=\"round\"/>';
+    rLegs.forEach(function(l) { svg += drawLeg(l.ang, l.cls, true);  });
+    lLegs.forEach(function(l) { svg += drawLeg(l.ang, l.cls, false); });
+
+    // Abdomen
+    svg += '<ellipse cx=\"0\" cy=\"'+(size*1.2)+'\" rx=\"'+(size*1.5)+'\" ry=\"'+(size*2.0)+'\" fill=\"'+color+'\"/>';
+    svg += '<ellipse cx=\"'+(size*-0.35)+'\" cy=\"'+(size*0.5)+'\" rx=\"'+(size*0.4)+'\" ry=\"'+(size*0.28)+'\" fill=\"rgba(255,255,255,0.1)\"/>';
+    svg += '<ellipse cx=\"0\" cy=\"'+(size*1.0)+'\" rx=\"'+(size*0.45)+'\" ry=\"'+(size*0.22)+'\" fill=\"rgba(255,140,0,0.22)\"/>';
+    svg += '<ellipse cx=\"0\" cy=\"'+(size*1.7)+'\" rx=\"'+(size*0.35)+'\" ry=\"'+(size*0.18)+'\" fill=\"rgba(255,140,0,0.16)\"/>';
+
+    // Cephalothorax
+    svg += '<ellipse cx=\"0\" cy=\"'+(size*-0.35)+'\" rx=\"'+(size*1.05)+'\" ry=\"'+(size*0.85)+'\" fill=\"'+color+'\"/>';
+
+    // 8 eyes
+    var er = size*0.16;
+    var eyes = [
+      [-size*0.5,-size*0.65],[-size*0.18,-size*0.78],[size*0.18,-size*0.78],[size*0.5,-size*0.65],
+      [-size*0.3,-size*0.48],[-size*0.08,-size*0.54],[size*0.08,-size*0.54],[size*0.3,-size*0.48]
+    ];
+    var ecols = ['#f00','#f40','#f00','#f00','#fff','#fff','#fff','#fff'];
+    eyes.forEach(function(ep,ei) {
+      svg += '<circle cx=\"'+ep[0].toFixed(1)+'\" cy=\"'+ep[1].toFixed(1)+'\" r=\"'+er.toFixed(1)+'\" fill=\"'+ecols[ei]+'\" opacity=\"0.9\"/>';
+    });
+
+    // Pedipalps
+    svg += '<line x1=\"'+(size*-0.45)+'\" y1=\"'+(size*-0.65)+'\" x2=\"'+(size*-1.1)+'\" y2=\"'+(size*-1.2)+'\" stroke=\"'+color+'\" stroke-width=\"'+(size*0.22).toFixed(1)+'\" stroke-linecap=\"round\"/>';
+    svg += '<line x1=\"'+(size*0.45)+'\" y1=\"'+(size*-0.65)+'\" x2=\"'+(size*1.1)+'\" y2=\"'+(size*-1.2)+'\" stroke=\"'+color+'\" stroke-width=\"'+(size*0.22).toFixed(1)+'\" stroke-linecap=\"round\"/>';
 
     svg += '</svg>';
     return svg;
