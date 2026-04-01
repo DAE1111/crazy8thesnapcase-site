@@ -567,7 +567,7 @@ if cr8_logo:
     background: transparent;
 }}
 #cr8-logo-wrap img {{
-    width: 784px;
+    width: 1137px;
     max-width: 90%;
     opacity: 0.50;
     display: block;
@@ -593,7 +593,7 @@ if cr8_logo:
   }}
 }})();
 </script>
-""", height=500, scrolling=False)
+""", height=700, scrolling=False)
 elif ARTIST_NAME:
     st.markdown(f'<div style="text-align:center;"><h1>{ARTIST_NAME}</h1></div>', unsafe_allow_html=True)
 
