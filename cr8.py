@@ -267,9 +267,9 @@ components.html("""
       width: 100%; height: 100%;
     }
     #cr8-hint {
-      position: fixed;
-      right: 72px;
-      top: 196px;
+      position: absolute;
+      right: 58px;
+      top: 88px;
       font-family: 'Times New Roman', serif;
       font-weight: bold;
       font-size: 11px;
