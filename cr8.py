@@ -264,8 +264,10 @@ components.html("""
     }
     @keyframes labelpulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
     @keyframes sacsway {
-      0%,100%{transform:rotate(-5deg);}
-      50%{transform:rotate(5deg);}
+      0%{transform:rotate(0deg);}
+      25%{transform:rotate(5deg);}
+      75%{transform:rotate(-5deg);}
+      100%{transform:rotate(0deg);}
     }
     #cr8-sac-swayer {
       position:absolute;
