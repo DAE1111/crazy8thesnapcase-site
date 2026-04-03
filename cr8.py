@@ -264,8 +264,16 @@ components.html("""
     }
     @keyframes labelpulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
     @keyframes sacsway {
-      0%,100%{transform:rotate(-4deg);transform-origin:top center;}
-      50%{transform:rotate(4deg);transform-origin:top center;}
+      0%,100%{transform:rotate(-5deg);}
+      50%{transform:rotate(5deg);}
+    }
+    #cr8-sac-swayer {
+      position:absolute;
+      left:224px;
+      top:130px;
+      transform-origin:top center;
+      animation:sacsway 2.4s ease-in-out infinite;
+      width:54px;
     }
   `;
   doc.head.appendChild(sty);
@@ -326,16 +334,20 @@ components.html("""
   // Egg sac
   var eggWrap=doc.createElement('div'); eggWrap.id='cr8-egg-wrap';
   doc.body.appendChild(eggWrap);
+  // swayer wrapper handles position + sway animation
+  var swayer=doc.createElement('div'); swayer.id='cr8-sac-swayer';
+  eggWrap.appendChild(swayer);
   var sacEl=doc.createElement('div'); sacEl.id='cr8-egg-sac';
-  sacEl.style.cssText='left:224px;top:130px;animation:sacsway 2.4s ease-in-out infinite;';
-  eggWrap.appendChild(sacEl);
+  sacEl.style.cssText='width:54px;height:66px;border-radius:45% 45% 52% 52%;cursor:pointer;pointer-events:all;overflow:hidden;position:relative;';
+  swayer.appendChild(sacEl);
   var eggCanvas=doc.createElement('canvas'); eggCanvas.id='cr8-egg-canvas';
   eggCanvas.width=54; eggCanvas.height=66;
   sacEl.appendChild(eggCanvas);
   var ectx=eggCanvas.getContext('2d');
+  // hint sits next to swayer, moves with it
   var hint=doc.createElement('div'); hint.id='cr8-egg-hint';
-  hint.innerHTML='CLICK ME &#9658;';
-  hint.style.cssText='position:absolute;top:143px;left:100px;'
+  hint.innerHTML='&#9664; CLICK ME';
+  hint.style.cssText='position:absolute;top:145px;left:40px;'
     +'font-family:Times New Roman,serif;font-weight:bold;font-size:11px;'
     +'color:#0DA832;background:rgba(0,0,0,0.82);border:1px solid #0DA832;'
     +'border-radius:4px;padding:4px 8px;white-space:nowrap;pointer-events:none;'
@@ -524,7 +536,7 @@ components.html("""
 
   sacEl.addEventListener('click',function(){
     if(hatched) return;
-    hatched=true; sacEl.style.display='none';
+    hatched=true; swayer.style.display='none'; hint.style.display='none';
     var W = window.parent.innerWidth;
     var cx = W - 340 + 224 + 27;
     var cy = 56 + 130 + 33;
@@ -545,7 +557,7 @@ components.html("""
       if(activeSpiders[i].life>=activeSpiders[i].maxLife) activeSpiders.splice(i,1);
     }
     if(hatched&&activeSpiders.length===0){
-      hatched=false; sacEl.style.display='block';
+      hatched=false; swayer.style.display='block'; hint.style.display='block';
     }
     requestAnimationFrame(loop);
   }
