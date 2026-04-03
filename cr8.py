@@ -338,13 +338,7 @@ components.html("""
     wctx.stroke();
   }
   wctx.globalAlpha = 1.0;
-  // vertical thread line on canvas
-  wctx.strokeStyle = 'rgba(200,185,155,0.8)';
-  wctx.lineWidth = 1.5;
-  wctx.beginPath();
-  wctx.moveTo(259, 0);
-  wctx.lineTo(259, 120);
-  wctx.stroke();
+
 
   // ---- SWAYER (thread + sac) ----
   var swayer = doc.createElement('div');
@@ -370,7 +364,7 @@ components.html("""
   var hint = doc.createElement('div');
   hint.id = 'cr8-hint';
   hint.innerHTML = 'CLICK ME -->';
-  doc.body.appendChild(hint);
+  swayer.appendChild(hint);
 
   // ---- BABIES inside sac ----
   var babies = [];
