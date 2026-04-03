@@ -271,7 +271,7 @@ components.html("""
     }
     #cr8-sac-swayer {
       position:absolute;
-      left:224px;
+      left:231px;
       top:130px;
       transform-origin:top center;
       animation:sacsway 2.4s ease-in-out infinite;
@@ -328,7 +328,7 @@ components.html("""
     }
     wctx.globalAlpha=1.0;
     wctx.strokeStyle='rgba(200,185,155,0.75)'; wctx.lineWidth=1.2;
-    wctx.beginPath(); wctx.moveTo(280,6); wctx.lineTo(258,130); wctx.stroke();
+    wctx.beginPath(); wctx.moveTo(258,6); wctx.lineTo(258,130); wctx.stroke();
     wctx.restore();
   }
   drawWeb();
