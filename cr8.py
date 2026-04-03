@@ -378,7 +378,9 @@ components.html("""
     });
   }
 
+  var sacRunning = true;
   function animateSac() {
+    if (!sacRunning) return;
     var W = 54, H = 66;
     ectx.clearRect(0,0,W,H);
     var g = ectx.createRadialGradient(W*0.38,H*0.28,2,W*0.5,H*0.5,W*0.72);
@@ -564,11 +566,13 @@ components.html("""
   };
 
   // ---- HATCH ----
-  sacEl.addEventListener('click', function(){
+  sacEl.addEventListener('click', function(e){
+    e.stopPropagation();
     if(hatched) return;
-    hatched=true;
-    swayer.style.display='none';
-    var W=window.parent.innerWidth;
+    hatched = true;
+    sacRunning = false;
+    swayer.style.display = 'none';
+    var W = window.parent.innerWidth;
     var cx = W - 41;
     var cy = 56 + 120 + 33;
     for(var i=0;i<38;i++){
@@ -587,8 +591,10 @@ components.html("""
     }
     if(hatched&&activeSpiders.length===0){
       hatched=false;
+      sacRunning=true;
       swayer.style.display='block';
       hint.style.display='block';
+      animateSac();
     }
     requestAnimationFrame(loop);
   }
