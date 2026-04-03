@@ -225,12 +225,6 @@ components.html("""
 
   var sty = doc.createElement('style');
   sty.textContent = `
-    @keyframes sacsway {
-      0%   { transform: rotate(0deg);   }
-      25%  { transform: rotate(6deg);   }
-      75%  { transform: rotate(-6deg);  }
-      100% { transform: rotate(0deg);   }
-    }
     @keyframes labelpulse {
       0%,100% { opacity:1; }
       50%     { opacity:0.4; }
@@ -246,13 +240,10 @@ components.html("""
     }
     #cr8-swayer {
       position: fixed;
-      /* thread attaches at canvas x=259, canvas right:0 so screen x = vw-300+259 = vw-41 */
-      /* swayer width=54, so right = 41 - 27 = 14px to center it on thread */
       right: 14px;
       top: 56px;
       width: 54px;
       transform-origin: top center;
-      animation: sacsway 2.6s ease-in-out infinite;
       z-index: 8001;
       pointer-events: all;
       cursor: pointer;
@@ -378,7 +369,7 @@ components.html("""
   // ---- HINT ----
   var hint = doc.createElement('div');
   hint.id = 'cr8-hint';
-  hint.innerHTML = 'CLICK ME &#9658;';
+  hint.innerHTML = 'CLICK ME -->';
   doc.body.appendChild(hint);
 
   // ---- BABIES inside sac ----
@@ -438,6 +429,25 @@ components.html("""
     requestAnimationFrame(animateSac);
   }
   animateSac();
+
+  // ---- PENDULUM PHYSICS for swayer ----
+  var pendAngle    = 0.18;  // start tilted so it swings immediately
+  var pendVelocity = 0.0;
+  var pendDamping  = 0.994;
+  var pendGravity  = 0.006;
+  function swayLoop() {
+    pendVelocity += -pendGravity * Math.sin(pendAngle);
+    pendVelocity *= pendDamping;
+    // babies randomly nudge it to keep it going
+    if (Math.random() < 0.12) pendVelocity += (Math.random()-0.5)*0.004;
+    // if it nearly stops, give it a kick
+    if (Math.abs(pendVelocity) < 0.001) pendVelocity += (Math.random()-0.5)*0.008;
+    pendAngle += pendVelocity;
+    var deg = pendAngle * (180/Math.PI);
+    swayer.style.transform = 'rotate(' + deg + 'deg)';
+    requestAnimationFrame(swayLoop);
+  }
+  swayLoop();
 
   // ---- SPIDER CANVAS ----
   var spiderCanvas = doc.createElement('canvas');
