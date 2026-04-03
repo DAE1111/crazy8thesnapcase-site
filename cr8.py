@@ -229,13 +229,13 @@ components.html("""
   var sty = doc.createElement('style');
   sty.textContent = `
     #cr8-web-canvas {
-      position:fixed; top:0; right:0;
-      width:280px; height:280px;
+      position:fixed; top:60px; right:0;
+      width:280px; height:300px;
       pointer-events:none; z-index:8000;
     }
     #cr8-egg-wrap {
-      position:fixed; top:0; right:0;
-      width:280px; height:280px;
+      position:fixed; top:60px; right:0;
+      width:280px; height:300px;
       pointer-events:none; z-index:8001;
     }
     #cr8-egg-sac {
@@ -273,7 +273,7 @@ components.html("""
   // Web canvas
   var webCanvas = doc.createElement('canvas');
   webCanvas.id = 'cr8-web-canvas';
-  webCanvas.width = 280; webCanvas.height = 280;
+  webCanvas.width = 280; webCanvas.height = 300;
   doc.body.appendChild(webCanvas);
   var wctx = webCanvas.getContext('2d');
 
@@ -314,7 +314,7 @@ components.html("""
     }
     wctx.globalAlpha=1.0;
     wctx.strokeStyle='rgba(200,185,155,0.65)'; wctx.lineWidth=0.9;
-    wctx.beginPath(); wctx.moveTo(226,8); wctx.lineTo(218,52); wctx.stroke();
+    wctx.beginPath(); wctx.moveTo(226,8); wctx.lineTo(210,90); wctx.stroke();
   }
   drawWeb();
 
@@ -322,7 +322,7 @@ components.html("""
   var eggWrap=doc.createElement('div'); eggWrap.id='cr8-egg-wrap';
   doc.body.appendChild(eggWrap);
   var sacEl=doc.createElement('div'); sacEl.id='cr8-egg-sac';
-  sacEl.style.cssText='left:191px;top:52px;animation:sacsway 2.8s ease-in-out infinite;';
+  sacEl.style.cssText='left:176px;top:90px;animation:sacsway 2.8s ease-in-out infinite;';
   eggWrap.appendChild(sacEl);
   var eggCanvas=doc.createElement('canvas'); eggCanvas.id='cr8-egg-canvas';
   eggCanvas.width=54; eggCanvas.height=66;
@@ -425,10 +425,18 @@ components.html("""
   Spider.prototype.update=function(){
     this.life++;
     var W=spiderCanvas.width, H=spiderCanvas.height;
-    this.vx+=(Math.random()-0.5)*0.35; this.vy+=(Math.random()-0.5)*0.35;
+    // Chaotic: random direction lurches, occasional stops, sudden bursts
+    this.pauseTimer = (this.pauseTimer||0) - 1;
+    if(this.pauseTimer > 0){
+      this.vx *= 0.85; this.vy *= 0.85;
+    } else {
+      this.vx+=(Math.random()-0.5)*1.8; this.vy+=(Math.random()-0.5)*1.8;
+      if(Math.random()<0.04){ this.vx=(Math.random()-0.5)*9; this.vy=(Math.random()-0.5)*9; }
+      if(Math.random()<0.03){ this.pauseTimer=8+Math.random()*15; }
+    }
     var spd=Math.sqrt(this.vx*this.vx+this.vy*this.vy);
-    if(spd>5){this.vx=(this.vx/spd)*5;this.vy=(this.vy/spd)*5;}
-    if(spd<0.8){this.vx*=1.5;this.vy*=1.5;}
+    if(spd>7){this.vx=(this.vx/spd)*7;this.vy=(this.vy/spd)*7;}
+    if(spd<0.4&&this.pauseTimer<=0){this.vx+=(Math.random()-0.5)*3;this.vy+=(Math.random()-0.5)*3;}
     this.x+=this.vx; this.y+=this.vy;
     if(this.x<10){this.x=10;this.vx=Math.abs(this.vx);}
     if(this.x>W-10){this.x=W-10;this.vx=-Math.abs(this.vx);}
