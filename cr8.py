@@ -564,15 +564,13 @@ components.html("""
   };
 
   // ---- HATCH ----
-  swayer.addEventListener('click', function(){
+  sacEl.addEventListener('click', function(){
     if(hatched) return;
     hatched=true;
     swayer.style.display='none';
-    hint.style.display='none';
     var W=window.parent.innerWidth;
-    // sac screen center: right:14px means left edge at W-14-54, center at W-14-27 = W-41
     var cx = W - 41;
-    var cy = 56 + 120 + 33; // top + thread height + half sac
+    var cy = 56 + 120 + 33;
     for(var i=0;i<38;i++){
       (function(idx){
         setTimeout(function(){ activeSpiders.push(new Spider(cx,cy)); }, idx*35);
