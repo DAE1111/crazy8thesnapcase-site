@@ -229,13 +229,13 @@ components.html("""
   var sty = doc.createElement('style');
   sty.textContent = `
     #cr8-web-canvas {
-      position:fixed; top:60px; right:0;
-      width:280px; height:300px;
+      position:fixed; top:56px; right:0;
+      width:340px; height:420px;
       pointer-events:none; z-index:8000;
     }
     #cr8-egg-wrap {
-      position:fixed; top:60px; right:0;
-      width:280px; height:300px;
+      position:fixed; top:56px; right:0;
+      width:340px; height:420px;
       pointer-events:none; z-index:8001;
     }
     #cr8-egg-sac {
@@ -273,13 +273,13 @@ components.html("""
   // Web canvas
   var webCanvas = doc.createElement('canvas');
   webCanvas.id = 'cr8-web-canvas';
-  webCanvas.width = 280; webCanvas.height = 300;
+  webCanvas.width = 340; webCanvas.height = 420;
   doc.body.appendChild(webCanvas);
   var wctx = webCanvas.getContext('2d');
 
   function drawWeb() {
-    wctx.clearRect(0,0,280,280);
-    var ox=280, oy=0, numSpokes=14, numRings=9, maxR=275;
+    wctx.clearRect(0,0,340,420);
+    var ox=340, oy=0, numSpokes=16, numRings=10, maxR=430;
     var spokes=[];
     for(var i=0;i<=numSpokes;i++){
       var ang=Math.PI+(i/numSpokes)*(Math.PI/2);
@@ -314,7 +314,7 @@ components.html("""
     }
     wctx.globalAlpha=1.0;
     wctx.strokeStyle='rgba(200,185,155,0.65)'; wctx.lineWidth=0.9;
-    wctx.beginPath(); wctx.moveTo(226,8); wctx.lineTo(210,90); wctx.stroke();
+    wctx.beginPath(); wctx.moveTo(280,6); wctx.lineTo(258,130); wctx.stroke();
   }
   drawWeb();
 
@@ -322,7 +322,7 @@ components.html("""
   var eggWrap=doc.createElement('div'); eggWrap.id='cr8-egg-wrap';
   doc.body.appendChild(eggWrap);
   var sacEl=doc.createElement('div'); sacEl.id='cr8-egg-sac';
-  sacEl.style.cssText='left:176px;top:90px;animation:sacsway 2.8s ease-in-out infinite;';
+  sacEl.style.cssText='left:224px;top:130px;animation:sacsway 2.8s ease-in-out infinite;';
   eggWrap.appendChild(sacEl);
   var eggCanvas=doc.createElement('canvas'); eggCanvas.id='cr8-egg-canvas';
   eggCanvas.width=54; eggCanvas.height=66;
@@ -513,9 +513,16 @@ components.html("""
   sacEl.addEventListener('click',function(){
     if(hatched) return;
     hatched=true; sacEl.style.display='none';
-    var rect=sacEl.getBoundingClientRect();
-    var cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
-    for(var i=0;i<38;i++) activeSpiders.push(new Spider(cx,cy));
+    var W = window.parent.innerWidth;
+    var cx = W - 340 + 224 + 27;
+    var cy = 56 + 130 + 33;
+    for(var i=0;i<38;i++){
+      (function(idx){
+        setTimeout(function(){
+          activeSpiders.push(new Spider(cx,cy));
+        }, idx*40);
+      })(i);
+    }
   });
 
   function loop(){
