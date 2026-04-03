@@ -273,13 +273,16 @@ components.html("""
   // Web canvas
   var webCanvas = doc.createElement('canvas');
   webCanvas.id = 'cr8-web-canvas';
-  webCanvas.width = 340; webCanvas.height = 420;
+  var dpr = window.parent.devicePixelRatio || 1;
+  webCanvas.width = 340 * dpr; webCanvas.height = 420 * dpr;
+  webCanvas.style.width = '340px'; webCanvas.style.height = '420px';
   doc.body.appendChild(webCanvas);
   var wctx = webCanvas.getContext('2d');
+  wctx.scale(dpr, dpr);
 
   function drawWeb() {
     wctx.clearRect(0,0,340,420);
-    var ox=340, oy=0, numSpokes=16, numRings=10, maxR=430;
+    var ox=339, oy=1, numSpokes=16, numRings=10, maxR=430;
     var spokes=[];
     for(var i=0;i<=numSpokes;i++){
       var ang=Math.PI+(i/numSpokes)*(Math.PI/2);
@@ -322,14 +325,21 @@ components.html("""
   var eggWrap=doc.createElement('div'); eggWrap.id='cr8-egg-wrap';
   doc.body.appendChild(eggWrap);
   var sacEl=doc.createElement('div'); sacEl.id='cr8-egg-sac';
-  sacEl.style.cssText='left:224px;top:130px;animation:sacsway 2.8s ease-in-out infinite;';
+  sacEl.style.cssText='left:224px;top:130px;animation:sacsway 2.4s ease-in-out infinite;';
   eggWrap.appendChild(sacEl);
   var eggCanvas=doc.createElement('canvas'); eggCanvas.id='cr8-egg-canvas';
   eggCanvas.width=54; eggCanvas.height=66;
   sacEl.appendChild(eggCanvas);
   var ectx=eggCanvas.getContext('2d');
-  var label=doc.createElement('div'); label.id='cr8-egg-label';
-  label.textContent='CLICK ME'; sacEl.appendChild(label);
+  var hint=doc.createElement('div'); hint.id='cr8-egg-hint';
+  hint.innerHTML='CLICK ME &#9658;';
+  hint.style.cssText='position:absolute;top:18px;right:62px;'
+    +'font-family:Times New Roman,serif;font-weight:bold;font-size:11px;'
+    +'color:#0DA832;background:rgba(0,0,0,0.82);border:1px solid #0DA832;'
+    +'border-radius:4px;padding:4px 8px;white-space:nowrap;pointer-events:none;'
+    +'text-shadow:0 0 6px #0DA832;letter-spacing:1px;'
+    +'animation:labelpulse 1.4s ease-in-out infinite;z-index:8002;';
+  eggWrap.appendChild(hint);
 
   var babies=[];
   for(var b=0;b<22;b++){
