@@ -269,7 +269,7 @@ components.html("""
     #cr8-hint {
       position: absolute;
       right: 58px;
-      top: 88px;
+      top: 108px;
       font-family: 'Times New Roman', serif;
       font-weight: bold;
       font-size: 11px;
