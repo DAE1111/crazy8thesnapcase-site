@@ -363,7 +363,7 @@ components.html("""
   // ---- HINT ----
   var hint = doc.createElement('div');
   hint.id = 'cr8-hint';
-  hint.innerHTML = 'CLICK ME -->';
+  hint.innerHTML = 'DOUBLE CLICK -->';
   swayer.appendChild(hint);
 
   // ---- BABIES inside sac ----
@@ -566,12 +566,14 @@ components.html("""
   };
 
   // ---- HATCH ----
-  sacEl.addEventListener('click', function(e){
+  // single unified click on the whole swayer
+  swayer.addEventListener('click', function(e){
     e.stopPropagation();
+    e.preventDefault();
     if(hatched) return;
     hatched = true;
     sacRunning = false;
-    swayer.style.display = 'none';
+    swayer.style.visibility = 'hidden';
     var W = window.parent.innerWidth;
     var cx = W - 41;
     var cy = 56 + 120 + 33;
@@ -580,7 +582,7 @@ components.html("""
         setTimeout(function(){ activeSpiders.push(new Spider(cx,cy)); }, idx*35);
       })(i);
     }
-  });
+  }, true); // useCapture=true so it fires before anything else
 
   function loop(){
     sctx.clearRect(0,0,spiderCanvas.width,spiderCanvas.height);
@@ -592,8 +594,7 @@ components.html("""
     if(hatched&&activeSpiders.length===0){
       hatched=false;
       sacRunning=true;
-      swayer.style.display='block';
-      hint.style.display='block';
+      swayer.style.visibility='visible';
       animateSac();
     }
     requestAnimationFrame(loop);
