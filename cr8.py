@@ -1132,9 +1132,9 @@ if menu == NAV_HOME:
     st.markdown('<div style="' + bio_style + '">' + BIO + '</div>', unsafe_allow_html=True)
     if cr8_bio_img:
         st.markdown(
-            f'<div style="text-align:center;margin-top:1rem;">'
+            f'<div style="display:flex;justify-content:center;align-items:center;margin:30px auto 0 auto;width:100%;">'
             f'<img src="data:image/jpeg;base64,{cr8_bio_img}" '
-            f'style="display:block;margin:auto;max-width:455px;width:100%;" loading="lazy">'
+            f'style="max-width:455px;width:100%;border:3px solid {TEXT_COLOR};box-shadow:0 0 20px {TEXT_COLOR},0 0 40px #001a00;" loading="lazy">'
             f'</div>',
             unsafe_allow_html=True
         )
