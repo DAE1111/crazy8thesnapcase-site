@@ -52,6 +52,10 @@ MIXTAPES = []
 EPS = []
 
 SINGLES = [
+    {"title": "UR MINE",                                    "year": 2026, "url": "https://open.spotify.com/track/73lDKrZsABYoRmrDqWudnw?si=c86fff7eb8d8425c"},
+    {"title": "HANDS UP",                                   "year": 2026, "url": "https://open.spotify.com/track/4QNlrekmELsjz1j3aJY7Kd?si=ab84933049f14573"},
+    {"title": "UR MINE",                                    "year": 2026, "url": "https://open.spotify.com/track/73lDKrZsABYoRmrDqWudnw"},
+    {"title": "HANDS UP",                                   "year": 2026, "url": "https://open.spotify.com/track/4QNlrekmELsjz1j3aJY7Kd"},
     {"title": "MARRIED TO THE SAW",                         "year": 2025, "url": "https://open.spotify.com/album/5TLKqKKoQxrVyMOi91M1Rg"},
     {"title": "ITZANE",                                     "year": 2025, "url": "https://open.spotify.com/album/7n662yTYYjHTskRh8NgO4n"},
     {"title": "CADILLACA$$",                                "year": 2025, "url": "https://open.spotify.com/album/4AnG3SNYvMblkSPI8l4nRc"},
